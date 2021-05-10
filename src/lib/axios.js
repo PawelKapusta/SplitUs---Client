@@ -7,7 +7,6 @@ const http = axios.create({
   },
   transformRequest: [
     data => {
-      console.log("sony 187");
       return JSON.stringify(data);
     },
   ],

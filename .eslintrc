@@ -1,36 +1,102 @@
-// const path = require("path");
-//
-// module.exports = {
-//   parser: "@typescript-eslint/parser",
-//   parserOptions: {
-//     project: "./tsconfig.json", // required for rules that need type information
-//     ecmaVersion: 2018,
-//     sourceType: "module",
-//     ecmaFeatures: {
-//       jsx: true,
-//     },
-//   },
-//   extends: [
-//     "eslint:recommended",
-//     "plugin:@typescript-eslint/recommended",
-//     "plugin:react/recommended",
-//     "prettier/@typescript-eslint",
-//     "plugin:prettier/recommended",
-//   ],
-//   rules: {
-//     "no-console": ["error", { allow: ["error", "log"] }],
-//     "no-empty": "off",
-//     "react/prop-types": "off", // seems to clash
-//     "@typescript-eslint/no-floating-promises": "error",
-//     "@typescript-eslint/no-non-null-assertion": "off",
-//     "@typescript-eslint/no-use-before-define": "off",
-//     "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
-//     "@typescript-eslint/camelcase": "off",
-//     "@typescript-eslint/explicit-function-return-type": "off",
-//   },
-//   settings: {
-//     react: {
-//       version: "detect", // Tells eslint-plugin-react to automatically detect the version of React to use
-//     },
-//   },
-// };
+{
+  "plugins": [
+    "prettier",
+    "@typescript-eslint",
+    "import"
+  ],
+  "extends": [
+    "airbnb-typescript",
+    "react-app",
+    "prettier"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "settings": {
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true,
+        "project": "packages/*/tsconfig.json"
+      }
+    },
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx"
+      ]
+    }
+  },
+  "rules": {
+    "import/no-unresolved": "error",
+    "object-curly-spacing": [
+      "warn",
+      "always"
+    ],
+    "no-unused-vars": [
+      "warn",
+      {
+        "vars": "all",
+        "args": "none"
+      }
+    ],
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "vars": "all",
+        "args": "none"
+      }
+    ],
+    "@typescript-eslint/no-explicit-any": [
+      "warn",
+      {
+        "ignoreRestArgs": true
+      }
+    ],
+    "max-len": [
+      "warn",
+      {
+        "code": 100,
+        "ignoreStrings": true,
+        "ignoreTemplateLiterals": true,
+        "ignoreComments": true
+      }
+    ],
+    "no-plusplus": [
+      "error",
+      {
+        "allowForLoopAfterthoughts": true
+      }
+    ],
+    "react/jsx-key": "error",
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": [
+          "*/.test.js",
+          "*/.test.jsx",
+          "*/.test.ts",
+          "*/.test.tsx",
+          "src/tests/**/*"
+        ]
+      }
+    ],
+    "react/jsx-props-no-spreading": "off",
+    "import/prefer-default-export": "off",
+    "react/jsx-boolean-value": "off",
+    "react/prop-types": "off",
+    "react/no-unescaped-entities": "off",
+    "react/jsx-one-expression-per-line": "off",
+    "react/jsx-wrap-multilines": "off",
+    "react/destructuring-assignment": "off",
+    "@typescript-eslint/comma-dangle": [
+      "error",
+      "only-multiline"
+    ],
+    "arrow-body-style": [
+      "warn",
+      "as-needed"
+    ],
+    "spaced-comment": "off"
+  }
+}

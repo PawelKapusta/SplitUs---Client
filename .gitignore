@@ -124,3 +124,6 @@ sketch
 .env.example
 .env.local
 .env.staging
+build/*
+!build/build.xml
+.netlify
