@@ -1,14 +1,6 @@
 {
-  "plugins": [
-    "prettier",
-    "@typescript-eslint",
-    "import"
-  ],
-  "extends": [
-    "airbnb-typescript",
-    "react-app",
-    "prettier"
-  ],
+  "plugins": ["prettier", "@typescript-eslint", "import"],
+  "extends": ["airbnb-typescript", "react-app", "prettier"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": "./tsconfig.json"
@@ -21,18 +13,12 @@
       }
     },
     "import/parsers": {
-      "@typescript-eslint/parser": [
-        ".ts",
-        ".tsx"
-      ]
+      "@typescript-eslint/parser": [".ts", ".tsx"]
     }
   },
   "rules": {
     "import/no-unresolved": "error",
-    "object-curly-spacing": [
-      "warn",
-      "always"
-    ],
+    "object-curly-spacing": ["warn", "always"],
     "no-unused-vars": [
       "warn",
       {
@@ -89,14 +75,8 @@
     "react/jsx-one-expression-per-line": "off",
     "react/jsx-wrap-multilines": "off",
     "react/destructuring-assignment": "off",
-    "@typescript-eslint/comma-dangle": [
-      "error",
-      "only-multiline"
-    ],
-    "arrow-body-style": [
-      "warn",
-      "as-needed"
-    ],
+    "@typescript-eslint/comma-dangle": ["error", "only-multiline"],
+    "arrow-body-style": ["warn", "as-needed"],
     "spaced-comment": "off"
   }
 }

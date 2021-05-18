@@ -3,7 +3,7 @@ class Auth {
     this.authenthicated = false;
   }
 
-  login(cb: () => void) {
+  login(cb) {
     this.authenticated = true;
     cb();
   }

@@ -15,3 +15,14 @@ export interface Group {
   Description: string;
   DataCreated: string;
 }
+
+export interface Currency {
+  currency: string;
+  code: string;
+  mid: number;
+}
+export interface CurrencyState {
+  readonly loading: boolean;
+  readonly currency: Currency[];
+  readonly errors?: string;
+}

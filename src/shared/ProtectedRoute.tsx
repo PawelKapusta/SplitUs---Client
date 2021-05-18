@@ -1,21 +1,26 @@
 import React from "react";
-import { Redirect, Route } from "react-router-dom";
+import { Redirect, Route, RouteProps } from "react-router-dom";
 import auth from "../auth";
 
-const ProtectedRoute: React.FC = ({ Component, ...rest }: any) => {
+interface PrivateRouteProps extends RouteProps {
+  component: any;
+}
+
+const ProtectedRoute = (props: PrivateRouteProps) => {
+  const { component: Component, ...rest } = props;
   return (
     <Route
       {...rest}
-      render={props => {
+      render={Props => {
         if (auth.isAuthenticated()) {
-          return <Component {...props} />;
+          return <Component {...Props} />;
         }
         return (
           <Redirect
             to={{
               pathname: "/",
               state: {
-                from: props.location,
+                from: Props.location,
               },
             }}
           />
