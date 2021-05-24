@@ -10,6 +10,7 @@ import {
   userDeleteReducer,
 } from "./reducers/userReducer";
 import { currencyListReducer } from "./reducers/currencyReducer";
+import { questionsFaqListReducer } from "./reducers/questionsFaqReducer";
 
 const initialState = {
   userSignIn: {
@@ -27,6 +28,7 @@ const reducer = combineReducers({
   userUpdateProfile: userUpdateProfileReducer,
   userDelete: userDeleteReducer,
   currencyList: currencyListReducer,
+  questionsFaqList: questionsFaqListReducer,
 });
 
 declare global {

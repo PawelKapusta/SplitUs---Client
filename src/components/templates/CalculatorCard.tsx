@@ -24,20 +24,20 @@ const useStyles = makeStyles((theme: Theme) => ({
       [theme.breakpoints.down("sm")]: {
         margin: "auto",
         marginTop: theme.spacing(15),
-        width: theme.spacing(50),
-        height: theme.spacing(70),
+        width: theme.spacing(60),
+        height: theme.spacing(65),
       },
       [theme.breakpoints.up("md")]: {
         margin: "auto",
         marginTop: theme.spacing(15),
-        width: theme.spacing(60),
+        width: theme.spacing(80),
         height: theme.spacing(70),
       },
       [theme.breakpoints.up("lg")]: {
         margin: "auto",
         marginTop: theme.spacing(15),
-        width: theme.spacing(70),
-        height: theme.spacing(70),
+        width: theme.spacing(85),
+        height: theme.spacing(80),
       },
     },
   },
@@ -56,12 +56,21 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
   },
   label: {
-    fontSize: 20,
-    marginBottom: 1,
+    [theme.breakpoints.down("sm")]: {
+      fontSize: 20,
+      marginBottom: 1,
+    },
+    [theme.breakpoints.up("md")]: {
+      fontSize: 25,
+      marginBottom: 2,
+    },
+    [theme.breakpoints.up("lg")]: {
+      fontSize: 29,
+      marginBottom: 3,
+    },
   },
   list: {
     width: "100%",
-    maxWidth: 390,
     margin: "auto",
     backgroundColor: theme.palette.background.paper,
     [theme.breakpoints.down("sm")]: {
@@ -72,7 +81,9 @@ const useStyles = makeStyles((theme: Theme) => ({
       width: "80%",
     },
     [theme.breakpoints.up("lg")]: {
+      marginTop: theme.spacing(5),
       width: "100%",
+      maxWidth: 630,
     },
   },
   listItem: {

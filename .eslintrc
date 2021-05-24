@@ -17,6 +17,8 @@
     }
   },
   "rules": {
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": ["error"],
     "import/no-unresolved": "error",
     "object-curly-spacing": ["warn", "always"],
     "no-unused-vars": [
