@@ -38,7 +38,7 @@ const CalculatorMenu: React.FC<Props> = ({
   const classes = useStyles();
   const leftCode = countryCodes[secondIndex];
   const leftCountryCodes = countryCodes.filter(code => code !== leftCode);
-  console.log(isLower(2, 1));
+
   return (
     <Menu
       id="menu"

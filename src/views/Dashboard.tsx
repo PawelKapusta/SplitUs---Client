@@ -4,8 +4,8 @@ import Paper from "@material-ui/core/Paper";
 import CardMedia from "@material-ui/core/CardMedia";
 import Grid from "@material-ui/core/Grid";
 import { NavLink } from "react-router-dom";
-import MainNavbar from "../shared/MainNavbar";
 import Button from "../components/atoms/Button";
+import auth from "../auth";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -53,7 +53,6 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className={classes.root}>
-      <MainNavbar />
       <Grid container spacing={6} direction="row" justify="space-evenly" alignItems="center">
         <Grid item xs={12} sm={6}>
           <Paper className={classes.paper}>
@@ -63,9 +62,13 @@ const Dashboard: React.FC = () => {
               looks obvious and easy to use for everybody.
             </div>
           </Paper>
-          <NavLink className={classes.button} to="/login">
-            <Button type="login_btn" text="Sign In" />
-          </NavLink>
+          {auth.isAuthenticated() ? (
+            ""
+          ) : (
+            <NavLink className={classes.button} to="/login">
+              <Button type="signIn_btn" text="Sign In" />
+            </NavLink>
+          )}
         </Grid>
         <Grid item xs={12} sm={6}>
           <CardMedia

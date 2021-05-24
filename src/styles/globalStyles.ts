@@ -30,6 +30,7 @@ const GlobalStyle = createGlobalStyle`
   ::-webkit-scrollbar-thumb:vertical {
     background: #2e2e2e;
   }
+
   body {
     padding: 0px;
     margin: 0px;

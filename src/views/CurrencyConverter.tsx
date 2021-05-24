@@ -8,7 +8,6 @@ const CurrencyConverter: React.FC = () => {
   const { loading, currency } = currencyList;
   const { currencies } = currency;
 
-  console.log(currencies);
   const dispatch = useDispatch();
 
   useEffect(() => {

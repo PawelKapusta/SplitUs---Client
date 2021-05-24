@@ -26,3 +26,13 @@ export interface CurrencyState {
   readonly currency: Currency[];
   readonly errors?: string;
 }
+
+export interface Questions {
+  Question: string;
+  Answer: string;
+}
+export interface QuestionsFaqState {
+  readonly loading: boolean;
+  readonly questions: Questions[];
+  readonly errors?: string;
+}

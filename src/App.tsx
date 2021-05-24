@@ -8,6 +8,10 @@ import GlobalsStyles from "./styles/globalStyles";
 import Menu from "./components/molecules/Navbar";
 import CurrencyConverter from "./views/CurrencyConverter";
 import Footer from "./components/molecules/Footer";
+import Contact from "./views/Contact";
+import QuestionsFaqComponent from "./views/QuestionsFaq";
+import Login from "./views/Login";
+import Register from "./views/Register";
 
 const useStyles = makeStyles({
   foundError: {
@@ -20,7 +24,6 @@ const useStyles = makeStyles({
 
 const App: React.FC = () => {
   const classes = useStyles();
-
   return (
     <BrowserRouter>
       <GlobalsStyles />
@@ -28,6 +31,10 @@ const App: React.FC = () => {
       <Switch>
         <Route exact path="/" component={Dashboard} />
         <Route path="/calculator" component={CurrencyConverter} />
+        <Route path="/contact" component={Contact} />
+        <Route path="/questionsFaq" component={QuestionsFaqComponent} />
+        <Route path="/login" component={Login} />
+        <Route path="/register" component={Register} />
         <ProtectedRoute path="/home" component={Home} />
         <Route path="*" component={() => <div className={classes.foundError}>404 NOT FOUND</div>} />
       </Switch>

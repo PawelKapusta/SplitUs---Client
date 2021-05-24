@@ -1,20 +1,21 @@
 class Auth {
   constructor() {
-    this.authenthicated = false;
+    this.authenthicated = "";
   }
 
-  login(cb) {
-    this.authenticated = true;
-    cb();
+  login(token) {
+    this.authenticated = token;
+    localStorage.setItem("token", JSON.stringify(token));
   }
 
-  logout(cb) {
-    this.authenticated = false;
-    cb();
+  logout() {
+    this.authenticated = "";
+    localStorage.removeItem("token");
   }
 
   isAuthenticated() {
-    return this.authenticated;
+    this.authenthicated = localStorage.getItem("token");
+    return this.authenthicated !== null;
   }
 }
 

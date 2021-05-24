@@ -21,16 +21,21 @@ import {
 } from "../../constants/usersConstatnts";
 import http from "../../lib/axios";
 import User from "../types/types";
+import auth from "../../auth";
 
 export const signIn = (email: string, password: string) => async (dispatch: any) => {
   dispatch({ type: USER_SIGNIN_REQUEST, payload: { email, password } });
   try {
-    const user: User = await http.post("/login", {
+    const user = await http.post("/login", {
       email,
       password,
     });
     dispatch({ type: USER_SIGNIN_SUCCESS, payload: user });
     localStorage.setItem("userInfo", JSON.stringify(user));
+    if (user?.data.token) {
+      auth.login(user?.data.token);
+      document.location.href = "/home";
+    }
   } catch (error) {
     dispatch({
       type: USER_SIGNIN_FAIL,
@@ -59,15 +64,15 @@ export const listUsers = () => async (dispatch: any, getState: any) => {
   }
 };
 
-export const register = (
+export const signUp = (
   FullName: string,
   Email: string,
   Password: string,
   Phone: number,
   BirthDate: string,
-  AvatarImage: string,
-  isAdmin: boolean,
-  isBlocked: boolean,
+  AvatarImage?: string,
+  isAdmin?: boolean,
+  isBlocked?: boolean,
 ) => async (dispatch: any) => {
   dispatch({
     type: USER_REGISTER_REQUEST,
@@ -85,7 +90,6 @@ export const register = (
       isBlocked,
     });
     dispatch({ type: USER_REGISTER_SUCCESS, payload: data });
-    dispatch({ type: USER_SIGNIN_SUCCESS, payload: data });
     localStorage.setItem("userInfo", JSON.stringify(data));
   } catch (error) {
     dispatch({
@@ -99,7 +103,7 @@ export const register = (
 export const signOut = () => (dispatch: any) => {
   localStorage.removeItem("userInfo");
   dispatch({ type: USER_SIGNOUT });
-  document.location.href = "/";
+  auth.logout();
 };
 
 export const updateUserProfile = (user: User) => async (dispatch: any, getState: any) => {
