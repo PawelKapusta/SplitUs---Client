@@ -15,6 +15,8 @@ import { useDispatch } from "react-redux";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import IconButton from "@material-ui/core/IconButton";
+import Backdrop from "@material-ui/core/Backdrop";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import { signIn } from "../../store/actions/userActions";
 
 interface FormValues {
@@ -37,10 +39,10 @@ const useStyles = makeStyles((theme: Theme) =>
         backgroundColor: "#ffffff",
         [theme.breakpoints.down("sm")]: {
           width: theme.spacing(48),
-          height: theme.spacing(55),
+          height: theme.spacing(58),
         },
         [theme.breakpoints.up("md")]: {
-          width: theme.spacing(70),
+          width: theme.spacing(76),
           height: theme.spacing(55),
         },
         [theme.breakpoints.up("lg")]: {
@@ -48,6 +50,10 @@ const useStyles = makeStyles((theme: Theme) =>
           height: theme.spacing(55),
         },
       },
+    },
+    backdrop: {
+      zIndex: theme.zIndex.drawer + 100,
+      backgroundColor: "rgba(52, 52, 52, 0.8)",
     },
     title: {
       textAlign: "center",
@@ -96,6 +102,10 @@ const useStyles = makeStyles((theme: Theme) =>
       marginLeft: "2%",
       color: "red",
       fontSize: "1.1em",
+      [theme.breakpoints.down("sm")]: {
+        display: "block",
+        marginTop: "3%",
+      },
     },
     span: {
       display: "block",
@@ -111,6 +121,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const LoginCard: React.FC<Props> = ({ userInfo }) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -119,6 +130,14 @@ const LoginCard: React.FC<Props> = ({ userInfo }) => {
     email: yup.string().required("Email is a required field").max(255),
     password: yup.string().required("Password is a required field").max(255),
   });
+
+  const handleToggle = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -138,6 +157,16 @@ const LoginCard: React.FC<Props> = ({ userInfo }) => {
 
   const onSubmit: SubmitHandler<FormValues> = data => {
     dispatch(signIn(data.email, data.password));
+    setTimeout(() => {
+      if (
+        userInfo?.data?.message === "Email or password does not match!" ||
+        userInfo?.data?.message === "Password does not match!"
+      ) {
+        handleClose();
+      }
+    }, 2000);
+
+    handleToggle();
     reset();
   };
 
@@ -233,6 +262,14 @@ const LoginCard: React.FC<Props> = ({ userInfo }) => {
           </span>
         </form>
       </Paper>
+      <Backdrop
+        className={classes.backdrop}
+        open={open}
+        transitionDuration={1500}
+        invisible={true}
+        onClick={handleClose}>
+        <CircularProgress color="secondary" />
+      </Backdrop>
     </div>
   );
 };
