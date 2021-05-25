@@ -35,7 +35,7 @@ const App: React.FC = () => {
         <Route path="/questionsFaq" component={QuestionsFaqComponent} />
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
-        <Route path="/home" component={Home} />
+        <ProtectedRoute path="/" component={Home} />
         <Route path="*" component={() => <div className={classes.foundError}>404 NOT FOUND</div>} />
       </Switch>
       <Footer />

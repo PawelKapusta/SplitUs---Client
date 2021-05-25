@@ -34,7 +34,7 @@ export const signIn = (email: string, password: string) => async (dispatch: any)
     localStorage.setItem("userInfo", JSON.stringify(user));
     if (user?.data.token) {
       auth.login(user?.data.token);
-      document.location.href = "/home";
+      document.location.href = "/";
     }
   } catch (error) {
     dispatch({
