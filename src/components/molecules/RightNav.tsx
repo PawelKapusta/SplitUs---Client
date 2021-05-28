@@ -6,6 +6,7 @@ import Logo from "../../assets/images/Logo.png";
 import Button from "../atoms/Button";
 import { signOut } from "../../store/actions/userActions";
 import auth from "../../auth";
+import UserMenu from "./UserMenu";
 
 type Props = {
   open: boolean;
@@ -58,8 +59,16 @@ const RightNav: React.FC<Props> = ({ open }) => {
           }}>
           <li>Questions FAQ</li>
         </NavLink>
+
         {isAuth ? (
-          <NavLink to="/home">
+          <S.UserMenu>
+            <UserMenu />{" "}
+          </S.UserMenu>
+        ) : (
+          ""
+        )}
+        {isAuth ? (
+          <NavLink to="/">
             <S.LoginButton>
               <Button type="logOut_btn" text="Sign Out" onClick={handleSignOutClick} />
             </S.LoginButton>

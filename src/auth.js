@@ -1,6 +1,7 @@
 class Auth {
   constructor() {
     this.authenthicated = "";
+    this.admin = false;
   }
 
   login(token) {

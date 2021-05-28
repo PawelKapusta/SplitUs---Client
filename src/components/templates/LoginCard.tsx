@@ -18,6 +18,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { signIn } from "../../store/actions/userActions";
+import FormInput from "../atoms/FormInput";
 
 interface FormValues {
   email: string;
@@ -46,14 +47,14 @@ const useStyles = makeStyles((theme: Theme) =>
           height: theme.spacing(55),
         },
         [theme.breakpoints.up("lg")]: {
-          width: theme.spacing(70),
+          width: theme.spacing(78),
           height: theme.spacing(55),
         },
       },
     },
     backdrop: {
       zIndex: theme.zIndex.drawer + 100,
-      backgroundColor: "rgba(52, 52, 52, 0.8)",
+      backgroundColor: "transparent",
     },
     title: {
       textAlign: "center",
@@ -82,10 +83,6 @@ const useStyles = makeStyles((theme: Theme) =>
     icon: {
       marginBottom: 13,
     },
-    input: {
-      width: "90%",
-      backgroundColor: "#F0FFFF",
-    },
     toRegister: {
       marginLeft: "4%",
       fontSize: "1.1em",
@@ -106,15 +103,10 @@ const useStyles = makeStyles((theme: Theme) =>
         display: "block",
         marginTop: "3%",
       },
-    },
-    span: {
-      display: "block",
-      fontSize: "1em",
-      marginTop: 5,
-      color: "#FF0000",
-    },
-    message: {
-      width: "90%",
+      [theme.breakpoints.down("md")]: {
+        display: "block",
+        marginTop: "3%",
+      },
     },
   }),
 );
@@ -151,6 +143,7 @@ const LoginCard: React.FC<Props> = ({ userInfo }) => {
     register,
     handleSubmit,
     reset,
+    setValue,
     control,
     formState: { errors },
   } = useForm<FormValues>({ resolver: yupResolver(schema) });
@@ -179,73 +172,50 @@ const LoginCard: React.FC<Props> = ({ userInfo }) => {
       <Paper elevation={3}>
         <h1 className={classes.title}>Login</h1>
         <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
-          <InputLabel className={classes.label}>Email</InputLabel>
-          <Controller
+          <FormInput
+            labelTitle="Email"
+            name="email"
+            control={control}
+            register={register}
+            setValue={setValue}
+            errors={errors?.email}
+            numberRows={1}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <AlternateEmailIcon className={classes.icon} />
+                </InputAdornment>
+              ),
+            }}
+            type="email"
+          />
+          <FormInput
+            labelTitle="Password"
             name="password"
             control={control}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                className={classes.input}
-                {...register("email", { required: true })}
-                id="filled-multiline-flexible"
-                name="email"
-                rows={8}
-                value={value}
-                onChange={onChange}
-                variant="filled"
-                margin="normal"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <AlternateEmailIcon className={classes.icon} />
-                    </InputAdornment>
-                  ),
-                }}
-                type="email"
-              />
-            )}
-            rules={{ required: "Email required" }}
+            register={register}
+            errors={errors?.password}
+            setValue={setValue}
+            numberRows={1}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <LockIcon className={classes.icon} />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}>
+                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            type={showPassword ? "text" : "password"}
           />
-          <span className={classes.span}>{errors.email?.message}</span>
-          <InputLabel className={classes.label}>Password</InputLabel>
-          <Controller
-            name="password"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                className={classes.input}
-                {...register("password", { required: true })}
-                id="filled-multiline-flexible"
-                name="password"
-                rows={8}
-                value={value}
-                onChange={onChange}
-                variant="filled"
-                margin="normal"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LockIcon className={classes.icon} />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}>
-                        {showPassword ? <Visibility /> : <VisibilityOff />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-                type={showPassword ? "text" : "password"}
-              />
-            )}
-            rules={{ required: "Email required" }}
-          />
-
-          <span className={classes.span}>{errors.password?.message}</span>
           <input type="submit" value="Login" className={classes.login} />
           <Button className={classes.toRegister} variant="outlined" onClick={handleRedirectClick}>
             New user?

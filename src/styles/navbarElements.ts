@@ -14,7 +14,7 @@ export const StyledBurger = styled.div<INav>`
   z-index: 20;
   display: none;
   font-family: "Zilla Slab";
-  @media (max-width: 1280px) {
+  @media (max-width: 1400px) {
     display: flex;
     justify-content: space-around;
     flex-flow: column nowrap;
@@ -49,12 +49,12 @@ export const Nav = styled.nav`
   align-items: center;
   position: relative;
 
-  @media (max-width: 1280px) {
+  @media (max-width: 1400px) {
     width: 100vw;
   }
   span {
     font-size: 30px;
-    @media only screen and (max-width: 1280px) {
+    @media only screen and (max-width: 1400px) {
       font-size: 20px;
       :nth-child(2) {
         font-size: 16px !important;
@@ -80,16 +80,18 @@ export const Ul = styled.ul<INav>`
     text-decoration: none;
     text-transform: none;
     width: auto;
+
     color: #000;
-    cursor: pointer;
+
     &:hover {
       color: #0dadea;
     }
   }
   li {
-    margin: 2em;
+    cursor: pointer;
+    margin: 1.9rem;
   }
-  @media (max-width: 1280px) {
+  @media (max-width: 1400px) {
     flex-flow: column nowrap;
     background-color: #fdfdfdfa;
     position: fixed;
@@ -98,18 +100,36 @@ export const Ul = styled.ul<INav>`
     font-size: 1.1em;
     right: 0;
     height: 100%;
-    width: 180px;
-    padding-top: 3.5rem;
+    width: 170px;
+    padding-top: 5rem;
     transition: transform 0.3s ease-in-out;
     z-index: 11;
     justify-content: normal;
+    a {
+      margin-right: 18%;
+    }
     li {
       color: #000;
-      margin-right: 90px;
+      text-align: center;
+      width: 90px;
       &:hover {
         color: #0dadea;
       }
     }
+  }
+`;
+
+export const UserMenu = styled.div`
+  margin-right: 2%;
+  margin-left: 2%;
+  width: 145px;
+  border-radius: 5px;
+  text-align: center;
+  color: #ffffff;
+  @media (max-width: 1400px) {
+    margin-top: 10%;
+    margin-right: 18%;
+    margin-bottom: 10%;
   }
 `;
 
@@ -123,19 +143,19 @@ export const Logo = styled.img`
 `;
 
 export const LogoUl = styled.img`
-  margin: 20px 50px 20px 5%;
+  margin: auto;
   display: none;
-  @media (max-width: 980px) {
+  @media (max-width: 1400px) {
+    margin-bottom: 10%;
     display: flex;
-    width: 160px;
+    width: 140px;
     height: 80px;
     object-fit: contain;
   }
 `;
 
 export const LoginButton = styled.div`
-  @media (max-width: 980px) {
-    margin-right: 30px;
+  @media (max-width: 1400px) {
     display: flex;
     width: 160px;
   }
