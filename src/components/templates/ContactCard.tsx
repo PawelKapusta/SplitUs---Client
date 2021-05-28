@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Paper from "@material-ui/core/Paper";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
@@ -91,6 +91,7 @@ const ContactCard: React.FC = () => {
 
   const userSignIn = useSelector((state: RootStateOrAny) => state.userSignIn);
   const { userInfo } = userSignIn;
+  const isAdmin = userInfo?.data?.isAdmin;
 
   const schema = yup.object().shape({
     fullName: yup.string().required("Full Name is a required field"),
@@ -129,7 +130,9 @@ const ContactCard: React.FC = () => {
   return (
     <div className={classes.root}>
       <Paper elevation={3}>
-        <h1 className={classes.title}>Contact with administrator</h1>
+        <h1 className={classes.title}>
+          Contact with {isAdmin ? process.env.REACT_APP_MAIN_ADMINISTRATOR : "administrator"}
+        </h1>
         <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
           <InputLabel className={classes.label}>Full Name</InputLabel>
           <Controller

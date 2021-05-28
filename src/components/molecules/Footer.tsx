@@ -48,6 +48,9 @@ const Footer: React.FC = () => {
             <FooterComponents.Link href="#">Story</FooterComponents.Link>
             <FooterComponents.Link href="#">Clients</FooterComponents.Link>
             <FooterComponents.Link href="#">Testimonials</FooterComponents.Link>
+            <FooterComponents.Link target="_blank" href={process.env.REACT_APP_ENTERTAINMENT_LINK}>
+              Entertainment
+            </FooterComponents.Link>
           </FooterComponents.Column>
           <FooterComponents.Column>
             <FooterComponents.Title>Services</FooterComponents.Title>

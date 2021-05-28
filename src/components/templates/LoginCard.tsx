@@ -15,7 +15,10 @@ import { useDispatch } from "react-redux";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import IconButton from "@material-ui/core/IconButton";
+import Backdrop from "@material-ui/core/Backdrop";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import { signIn } from "../../store/actions/userActions";
+import FormInput from "../atoms/FormInput";
 
 interface FormValues {
   email: string;
@@ -37,17 +40,21 @@ const useStyles = makeStyles((theme: Theme) =>
         backgroundColor: "#ffffff",
         [theme.breakpoints.down("sm")]: {
           width: theme.spacing(48),
-          height: theme.spacing(55),
+          height: theme.spacing(58),
         },
         [theme.breakpoints.up("md")]: {
-          width: theme.spacing(70),
+          width: theme.spacing(76),
           height: theme.spacing(55),
         },
         [theme.breakpoints.up("lg")]: {
-          width: theme.spacing(70),
+          width: theme.spacing(78),
           height: theme.spacing(55),
         },
       },
+    },
+    backdrop: {
+      zIndex: theme.zIndex.drawer + 100,
+      backgroundColor: "transparent",
     },
     title: {
       textAlign: "center",
@@ -76,10 +83,6 @@ const useStyles = makeStyles((theme: Theme) =>
     icon: {
       marginBottom: 13,
     },
-    input: {
-      width: "90%",
-      backgroundColor: "#F0FFFF",
-    },
     toRegister: {
       marginLeft: "4%",
       fontSize: "1.1em",
@@ -96,21 +99,21 @@ const useStyles = makeStyles((theme: Theme) =>
       marginLeft: "2%",
       color: "red",
       fontSize: "1.1em",
-    },
-    span: {
-      display: "block",
-      fontSize: "1em",
-      marginTop: 5,
-      color: "#FF0000",
-    },
-    message: {
-      width: "90%",
+      [theme.breakpoints.down("sm")]: {
+        display: "block",
+        marginTop: "3%",
+      },
+      [theme.breakpoints.down("md")]: {
+        display: "block",
+        marginTop: "3%",
+      },
     },
   }),
 );
 
 const LoginCard: React.FC<Props> = ({ userInfo }) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -119,6 +122,14 @@ const LoginCard: React.FC<Props> = ({ userInfo }) => {
     email: yup.string().required("Email is a required field").max(255),
     password: yup.string().required("Password is a required field").max(255),
   });
+
+  const handleToggle = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -132,12 +143,23 @@ const LoginCard: React.FC<Props> = ({ userInfo }) => {
     register,
     handleSubmit,
     reset,
+    setValue,
     control,
     formState: { errors },
   } = useForm<FormValues>({ resolver: yupResolver(schema) });
 
   const onSubmit: SubmitHandler<FormValues> = data => {
     dispatch(signIn(data.email, data.password));
+    setTimeout(() => {
+      if (
+        userInfo?.data?.message === "Email or password does not match!" ||
+        userInfo?.data?.message === "Password does not match!"
+      ) {
+        handleClose();
+      }
+    }, 2000);
+
+    handleToggle();
     reset();
   };
 
@@ -150,73 +172,50 @@ const LoginCard: React.FC<Props> = ({ userInfo }) => {
       <Paper elevation={3}>
         <h1 className={classes.title}>Login</h1>
         <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
-          <InputLabel className={classes.label}>Email</InputLabel>
-          <Controller
+          <FormInput
+            labelTitle="Email"
+            name="email"
+            control={control}
+            register={register}
+            setValue={setValue}
+            errors={errors?.email}
+            numberRows={1}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <AlternateEmailIcon className={classes.icon} />
+                </InputAdornment>
+              ),
+            }}
+            type="email"
+          />
+          <FormInput
+            labelTitle="Password"
             name="password"
             control={control}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                className={classes.input}
-                {...register("email", { required: true })}
-                id="filled-multiline-flexible"
-                name="email"
-                rows={8}
-                value={value}
-                onChange={onChange}
-                variant="filled"
-                margin="normal"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <AlternateEmailIcon className={classes.icon} />
-                    </InputAdornment>
-                  ),
-                }}
-                type="email"
-              />
-            )}
-            rules={{ required: "Email required" }}
+            register={register}
+            errors={errors?.password}
+            setValue={setValue}
+            numberRows={1}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <LockIcon className={classes.icon} />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}>
+                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            type={showPassword ? "text" : "password"}
           />
-          <span className={classes.span}>{errors.email?.message}</span>
-          <InputLabel className={classes.label}>Password</InputLabel>
-          <Controller
-            name="password"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                className={classes.input}
-                {...register("password", { required: true })}
-                id="filled-multiline-flexible"
-                name="password"
-                rows={8}
-                value={value}
-                onChange={onChange}
-                variant="filled"
-                margin="normal"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LockIcon className={classes.icon} />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}>
-                        {showPassword ? <Visibility /> : <VisibilityOff />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-                type={showPassword ? "text" : "password"}
-              />
-            )}
-            rules={{ required: "Email required" }}
-          />
-
-          <span className={classes.span}>{errors.password?.message}</span>
           <input type="submit" value="Login" className={classes.login} />
           <Button className={classes.toRegister} variant="outlined" onClick={handleRedirectClick}>
             New user?
@@ -233,6 +232,14 @@ const LoginCard: React.FC<Props> = ({ userInfo }) => {
           </span>
         </form>
       </Paper>
+      <Backdrop
+        className={classes.backdrop}
+        open={open}
+        transitionDuration={1500}
+        invisible={true}
+        onClick={handleClose}>
+        <CircularProgress color="secondary" />
+      </Backdrop>
     </div>
   );
 };

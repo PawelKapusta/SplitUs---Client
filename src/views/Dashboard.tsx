@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import CardMedia from "@material-ui/core/CardMedia";
 import Grid from "@material-ui/core/Grid";
 import { NavLink } from "react-router-dom";
+import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+import { RootStateOrAny, useSelector } from "react-redux";
+import Snackbar from "@material-ui/core/Snackbar";
 import Button from "../components/atoms/Button";
 import auth from "../auth";
 
@@ -45,11 +48,44 @@ const useStyles = makeStyles((theme: Theme) =>
       objectFit: "contain",
       height: 670,
     },
+    snackbar: {
+      width: "100%",
+      marginTop: theme.spacing(2),
+    },
   }),
 );
 
+function Alert(props: AlertProps) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
 const Dashboard: React.FC = () => {
+  const userSignIn = useSelector((state: RootStateOrAny) => state.userSignIn);
+  const { userInfo } = userSignIn;
   const classes = useStyles();
+  const [open, setOpen] = useState(false);
+  const firstLogin = sessionStorage.getItem("firstSignIn");
+  const firstRender = localStorage.getItem("firstRender");
+
+  useEffect(() => {
+    setOpen(true);
+  }, []);
+
+  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+    const temporary = event;
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
+
+    if (firstLogin) {
+      sessionStorage.removeItem("firstSignIn");
+      localStorage.removeItem("firstRender");
+    } else {
+      localStorage.removeItem("firstRender");
+    }
+  };
 
   return (
     <div className={classes.root}>
@@ -78,6 +114,24 @@ const Dashboard: React.FC = () => {
           />
         </Grid>
       </Grid>
+      {userInfo && firstLogin && firstRender ? (
+        <div className={classes.snackbar}>
+          <Snackbar open={open} autoHideDuration={4000} onClose={handleClose}>
+            <Alert severity="info">{`Welcome ${userInfo?.data?.FullName} our new user. We hope you will enjoyed well :)`}</Alert>
+          </Snackbar>
+        </div>
+      ) : (
+        ""
+      )}
+      {userInfo && !firstLogin && firstRender ? (
+        <div className={classes.snackbar}>
+          <Snackbar open={open} autoHideDuration={4000} onClose={handleClose}>
+            <Alert severity="info">{`${userInfo?.data?.message}  ${userInfo?.data?.FullName}`}</Alert>
+          </Snackbar>
+        </div>
+      ) : (
+        ""
+      )}
     </div>
   );
 };

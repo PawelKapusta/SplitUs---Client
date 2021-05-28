@@ -20,7 +20,6 @@ import {
   USER_UPDATE_PROFILE_SUCCESS,
 } from "../../constants/usersConstatnts";
 import http from "../../lib/axios";
-import User from "../types/types";
 import auth from "../../auth";
 
 export const signIn = (email: string, password: string) => async (dispatch: any) => {
@@ -32,9 +31,10 @@ export const signIn = (email: string, password: string) => async (dispatch: any)
     });
     dispatch({ type: USER_SIGNIN_SUCCESS, payload: user });
     localStorage.setItem("userInfo", JSON.stringify(user));
+    localStorage.setItem("firstRender", JSON.stringify(true));
     if (user?.data.token) {
       auth.login(user?.data.token);
-      document.location.href = "/home";
+      document.location.href = "/";
     }
   } catch (error) {
     dispatch({
@@ -91,6 +91,7 @@ export const signUp = (
     });
     dispatch({ type: USER_REGISTER_SUCCESS, payload: data });
     localStorage.setItem("userInfo", JSON.stringify(data));
+    sessionStorage.setItem("firstSignIn", JSON.stringify(true));
   } catch (error) {
     dispatch({
       type: USER_REGISTER_FAIL,
@@ -102,23 +103,38 @@ export const signUp = (
 
 export const signOut = () => (dispatch: any) => {
   localStorage.removeItem("userInfo");
+  sessionStorage.removeItem("firstSignIn");
   dispatch({ type: USER_SIGNOUT });
   auth.logout();
 };
 
-export const updateUserProfile = (user: User) => async (dispatch: any, getState: any) => {
-  dispatch({ type: USER_UPDATE_PROFILE_REQUEST, payload: user });
+export const updateUserProfile = (
+  FullName: string,
+  Email: string,
+  Password: string,
+  Phone: number,
+  BirthDate: string,
+  AvatarImage: string,
+) => async (dispatch: any, getState: any) => {
+  dispatch({
+    type: USER_UPDATE_PROFILE_REQUEST,
+    payload: { FullName, Email, Password, Phone, BirthDate, AvatarImage },
+  });
   const {
     userSignIn: { userInfo },
   } = getState();
   try {
-    const { data } = await http.put(`/profile`, user, {
-      headers: { Authorization: `Bearer ${userInfo.token}` },
-    });
+    const { data } = await http.put(
+      `/profile`,
+      { FullName, Email, Password, Phone, BirthDate, AvatarImage },
+      {
+        headers: { Authorization: `Bearer ${userInfo?.data?.token}` },
+      },
+    );
     dispatch({ type: USER_UPDATE_PROFILE_SUCCESS, payload: data });
     dispatch({ type: USER_SIGNIN_SUCCESS, payload: data });
-    localStorage.setItem("userInfo", JSON.stringify(data));
   } catch (error) {
+    console.log("detail actions error", error);
     const message =
       error.response && error.response.data.message ? error.response.data.message : error.message;
     dispatch({ type: USER_UPDATE_PROFILE_FAIL, payload: message });

@@ -1,9 +1,9 @@
 import React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-import Home from "./views/Home";
 import Dashboard from "./views/Dashboard";
 import ProtectedRoute from "./shared/ProtectedRoute";
+import AdminRoute from "./shared/AdminRoute";
 import GlobalsStyles from "./styles/globalStyles";
 import Menu from "./components/molecules/Navbar";
 import CurrencyConverter from "./views/CurrencyConverter";
@@ -12,6 +12,12 @@ import Contact from "./views/Contact";
 import QuestionsFaqComponent from "./views/QuestionsFaq";
 import Login from "./views/Login";
 import Register from "./views/Register";
+import Profile from "./views/Profile";
+import Membership from "./views/Membership";
+import GroupCreator from "./views/GroupCreator";
+import Users from "./views/Users";
+import Groups from "./views/Groups";
+import Bills from "./views/Bills";
 
 const useStyles = makeStyles({
   foundError: {
@@ -35,7 +41,13 @@ const App: React.FC = () => {
         <Route path="/questionsFaq" component={QuestionsFaqComponent} />
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
-        <ProtectedRoute path="/home" component={Home} />
+        <ProtectedRoute exact path="/" component={Dashboard} />
+        <ProtectedRoute path="/profile" component={Profile} />
+        <ProtectedRoute path="/membership" component={Membership} />
+        <ProtectedRoute path="/groups/new" component={GroupCreator} />
+        <AdminRoute exact path="/users" component={Users} />
+        <AdminRoute exact path="/groups" component={Groups} />
+        <AdminRoute exact path="/bills" component={Bills} />
         <Route path="*" component={() => <div className={classes.foundError}>404 NOT FOUND</div>} />
       </Switch>
       <Footer />
