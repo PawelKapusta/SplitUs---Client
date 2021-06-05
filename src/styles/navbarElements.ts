@@ -14,7 +14,7 @@ export const StyledBurger = styled.div<INav>`
   z-index: 20;
   display: none;
   font-family: "Zilla Slab";
-  @media (max-width: 1400px) {
+  @media (max-width: 1464px) {
     display: flex;
     justify-content: space-around;
     flex-flow: column nowrap;
@@ -49,12 +49,12 @@ export const Nav = styled.nav`
   align-items: center;
   position: relative;
 
-  @media (max-width: 1400px) {
+  @media (max-width: 1464px) {
     width: 100vw;
   }
   span {
     font-size: 30px;
-    @media only screen and (max-width: 1400px) {
+    @media only screen and (max-width: 1464px) {
       font-size: 20px;
       :nth-child(2) {
         font-size: 16px !important;
@@ -70,7 +70,7 @@ export const Ul = styled.ul<INav>`
   display: flex;
   flex-flow: row nowrap;
   position: absolute;
-  width: 90%;
+  width: 96%;
   top: 0;
   justify-content: flex-end;
   align-items: center;
@@ -91,17 +91,17 @@ export const Ul = styled.ul<INav>`
     cursor: pointer;
     margin: 1.9rem;
   }
-  @media (max-width: 1400px) {
+  @media (max-width: 1464px) {
     flex-flow: column nowrap;
     background-color: #fdfdfdfa;
     position: fixed;
     transform: ${props => (props.open ? "translateX(0)" : "translateX(100%)")};
-    top: -16px;
+    top: -18px;
     font-size: 1.1em;
     right: 0;
     height: 100%;
     width: 170px;
-    padding-top: 5rem;
+
     transition: transform 0.3s ease-in-out;
     z-index: 11;
     justify-content: normal;
@@ -126,7 +126,7 @@ export const UserMenu = styled.div`
   border-radius: 5px;
   text-align: center;
   color: #ffffff;
-  @media (max-width: 1400px) {
+  @media (max-width: 1464px) {
     margin-top: 10%;
     margin-right: 18%;
     margin-bottom: 10%;
@@ -137,16 +137,27 @@ export const Logo = styled.img`
   margin: 0px 50px 8px 7%;
   width: 130px;
   z-index: 10;
-  @media (max-width: 1250px) {
+  @media (max-width: 1464px) {
     margin: 20px 50px 20px 7%;
+  }
+`;
+
+export const AvatarImage = styled.div`
+  margin: 0px 2% 8px 2%;
+  z-index: 10;
+  @media (max-width: 1464px) {
+    margin: 20px 70px 20px 7%;
+  }
+  @media (max-width: 400px) {
+    margin-left: 4px;
+    margin-top: 2px;
   }
 `;
 
 export const LogoUl = styled.img`
   margin: auto;
   display: none;
-  @media (max-width: 1400px) {
-    margin-bottom: 10%;
+  @media (max-width: 1464px) {
     display: flex;
     width: 140px;
     height: 80px;
@@ -155,8 +166,9 @@ export const LogoUl = styled.img`
 `;
 
 export const LoginButton = styled.div`
-  @media (max-width: 1400px) {
+  @media (max-width: 1464px) {
     display: flex;
     width: 160px;
+    margin-left: 10px;
   }
 `;

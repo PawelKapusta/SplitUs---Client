@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
+import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import Avatar from "@material-ui/core/Avatar";
 import * as S from "../../styles/navbarElements";
 import Logo from "../../assets/images/Logo.png";
 import Button from "../atoms/Button";
@@ -12,14 +14,31 @@ type Props = {
   open: boolean;
 };
 
-const RightNav: React.FC<Props> = ({ open }) => {
-  const [isAuth, setIsAuth] = useState<boolean>(auth.isAuthenticated());
-  const dispatch = useDispatch();
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    large: {
+      marginLeft: theme.spacing(3),
+      width: theme.spacing(10),
+      height: theme.spacing(10),
+    },
+  }),
+);
 
+const RightNav: React.FC<Props> = ({ open }) => {
+  const userSignIn = useSelector((state: RootStateOrAny) => state.userSignIn);
+  const { userInfo } = userSignIn;
+  const [isAuth, setIsAuth] = useState<boolean>(auth.isAuthenticated());
+  const [image, setImage] = useState(userInfo?.data?.AvatarImage);
+  const dispatch = useDispatch();
+  const classes = useStyles();
   const handleSignOutClick = () => {
     dispatch(signOut());
     setIsAuth(!isAuth);
   };
+
+  useEffect(() => {
+    setImage(userInfo?.data?.AvatarImage);
+  });
 
   return (
     <>
@@ -59,7 +78,6 @@ const RightNav: React.FC<Props> = ({ open }) => {
           }}>
           <li>Questions FAQ</li>
         </NavLink>
-
         {isAuth ? (
           <S.UserMenu>
             <UserMenu />{" "}
@@ -79,6 +97,13 @@ const RightNav: React.FC<Props> = ({ open }) => {
               <Button type="signIn_btn" text="Sign In" />
             </S.LoginButton>
           </NavLink>
+        )}
+        {userInfo && isAuth ? (
+          <S.AvatarImage>
+            <Avatar className={classes.large} alt={userInfo?.data?.FullName} src={image} />
+          </S.AvatarImage>
+        ) : (
+          ""
         )}
       </S.Ul>
     </>

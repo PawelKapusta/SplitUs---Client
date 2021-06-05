@@ -11,6 +11,14 @@ import {
 } from "./reducers/userReducer";
 import { currencyListReducer } from "./reducers/currencyReducer";
 import { questionsFaqListReducer } from "./reducers/questionsFaqReducer";
+import {
+  groupsListReducer,
+  userGroupsListReducer,
+  groupCreateReducer,
+  addUsersToGroupReducer,
+  usersOfGroupReducer,
+  groupDetailsReducer,
+} from "./reducers/groupsReducer";
 
 const initialState = {
   userSignIn: {
@@ -23,12 +31,18 @@ const reducer = combineReducers({
   userSignIn: userSignInReducer,
   userRegister: userRegisterReducer,
   userList: userListReducer,
+  groupsList: groupsListReducer,
+  userGroupsList: userGroupsListReducer,
   userDetails: userDetailsReducer,
   userUpdate: userUpdateReducer,
   userUpdateProfile: userUpdateProfileReducer,
   userDelete: userDeleteReducer,
   currencyList: currencyListReducer,
   questionsFaqList: questionsFaqListReducer,
+  createdGroup: groupCreateReducer,
+  groupUsers: addUsersToGroupReducer,
+  usersOfGroup: usersOfGroupReducer,
+  groupDetails: groupDetailsReducer,
 });
 
 declare global {

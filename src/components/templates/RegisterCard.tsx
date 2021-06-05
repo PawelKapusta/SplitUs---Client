@@ -18,8 +18,10 @@ import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
+import axios from "axios";
 import { signUp } from "../../store/actions/userActions";
 import FormInput from "../atoms/FormInput";
+import defaultAvatar from "../../assets/svg/undraw_profile_pic_ic5t.svg";
 
 interface FormValues {
   fullName: string;
@@ -42,15 +44,15 @@ const useStyles = makeStyles((theme: Theme) =>
         backgroundColor: "#ffffff",
         [theme.breakpoints.down("sm")]: {
           width: theme.spacing(48),
-          height: theme.spacing(125),
+          height: theme.spacing(130),
         },
         [theme.breakpoints.up("md")]: {
           width: theme.spacing(70),
-          height: theme.spacing(125),
+          height: theme.spacing(130),
         },
         [theme.breakpoints.up("lg")]: {
           width: theme.spacing(70),
-          height: theme.spacing(125),
+          height: theme.spacing(130),
         },
       },
     },
@@ -76,6 +78,7 @@ const useStyles = makeStyles((theme: Theme) =>
       height: 46,
       padding: "0 30px",
       cursor: "pointer",
+      marginTop: 5,
     },
     icon: {
       marginBottom: 13,
@@ -118,7 +121,7 @@ function Alert(props: AlertProps) {
 }
 
 const RegisterCard: React.FC = () => {
-  const [image, setImage] = useState([]);
+  const [image, setImage] = useState(defaultAvatar);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [open, setOpen] = React.useState(false);
   const classes = useStyles();
@@ -157,23 +160,22 @@ const RegisterCard: React.FC = () => {
     formState: { errors },
   } = useForm<FormValues>({ resolver: yupResolver(schema) });
 
-  const onSubmit: SubmitHandler<FormValues> = data => {
-    dispatch(
-      signUp(
-        data.fullName,
-        data.email,
-        data.password,
-        data.phone,
-        data.birthDate,
-        data.avatar,
-        false,
-        false,
-      ),
-    );
-    reset();
-    setTimeout(() => {
-      setOpen(true);
-    }, 1000);
+  const uploadImage = async () => {
+    const formData = new FormData();
+    formData.append("file", image);
+    formData.append("upload_preset", "l0hqmgyr");
+    console.log("Form data", formData);
+    console.log("image", image);
+    try {
+      const resp = await axios.post(
+        "https://api.cloudinary.com/v1_1/duk476xud/image/upload",
+        formData,
+      );
+      return resp.data.url;
+    } catch (e) {
+      console.log(e);
+    }
+    return defaultAvatar;
   };
 
   const handleRedirectClick = () => {
@@ -186,6 +188,29 @@ const RegisterCard: React.FC = () => {
 
   const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
+  };
+
+  const onSubmit: SubmitHandler<FormValues> = async data => {
+    const send = uploadImage().then(url => {
+      dispatch(
+        signUp(
+          data.fullName,
+          data.email,
+          data.password,
+          data.phone,
+          data.birthDate,
+          url,
+          false,
+          false,
+        ),
+      );
+      reset();
+    });
+
+    console.log(data);
+    setTimeout(() => {
+      setOpen(true);
+    }, 1000);
   };
 
   return (
@@ -311,6 +336,7 @@ const RegisterCard: React.FC = () => {
             type="number"
           />
           <InputLabel className={classes.label}>Avatar Image</InputLabel>
+          <input type="file" onChange={event => setImage(event.target.files![0] as any)} />
           <span className={classes.span}>{errors.avatar?.message}</span>
           <input type="submit" value="Register" className={classes.register} />
           <Button className={classes.toLogin} variant="outlined" onClick={handleRedirectClick}>

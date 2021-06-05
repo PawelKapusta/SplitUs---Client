@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "@material-ui/core/Button";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -7,6 +7,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import ArrowDropDownCircleIcon from "@material-ui/icons/ArrowDropDownCircle";
 import { RootStateOrAny, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import auth from "../../auth";
 
 const useStyles = makeStyles({
   userButton: {
@@ -49,7 +50,7 @@ const UserMenu = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const classes = useStyles();
-  const isAdmin = userInfo?.data?.isAdmin;
+  const [isAdmin, setIsAdmin] = useState(userInfo?.data?.isAdmin);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -58,6 +59,10 @@ const UserMenu = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  useEffect(() => {
+    setIsAdmin(userInfo?.data?.isAdmin);
+  });
 
   return (
     <div>

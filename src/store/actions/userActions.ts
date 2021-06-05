@@ -53,10 +53,10 @@ export const listUsers = () => async (dispatch: any, getState: any) => {
     } = getState();
     const { data } = await http.get("/users", {
       headers: {
-        Authorization: `Bearer ${userInfo.token}`,
+        Authorization: `Bearer ${userInfo.data.token}`,
       },
     });
-    dispatch({ type: USER_LIST_SUCCESS, payload: data });
+    dispatch({ type: USER_LIST_SUCCESS, payload: data?.users });
   } catch (error) {
     const message =
       error.response && error.response.data.message ? error.response.data.message : error.message;
@@ -131,8 +131,9 @@ export const updateUserProfile = (
         headers: { Authorization: `Bearer ${userInfo?.data?.token}` },
       },
     );
-    dispatch({ type: USER_UPDATE_PROFILE_SUCCESS, payload: data });
-    dispatch({ type: USER_SIGNIN_SUCCESS, payload: data });
+    console.log("profile update", data);
+    dispatch({ type: USER_UPDATE_PROFILE_SUCCESS, payload: data?.user });
+    dispatch({ type: USER_SIGNIN_SUCCESS, payload: data?.user });
   } catch (error) {
     console.log("detail actions error", error);
     const message =
@@ -148,7 +149,7 @@ export const deleteUser = (userId: number) => async (dispatch: any, getState: an
   } = getState();
   try {
     const { data } = await http.delete(`/users/${userId}`, {
-      headers: { Authorization: `Bearer ${userInfo.token}` },
+      headers: { Authorization: `Bearer ${userInfo?.data?.token}` },
     });
     dispatch({ type: USER_DELETE_SUCCESS, payload: data });
   } catch (error) {
@@ -165,7 +166,7 @@ export const detailsUser = (userId: number) => async (dispatch: any, getState: a
   } = getState();
   try {
     const { data } = await http.get(`/users/${userId}`, {
-      headers: { Authorization: `Bearer ${userInfo.token}` },
+      headers: { Authorization: `Bearer ${userInfo?.data?.token}` },
     });
     dispatch({ type: USER_DETAILS_SUCCESS, payload: data });
   } catch (error) {

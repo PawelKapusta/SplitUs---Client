@@ -12,6 +12,7 @@ import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import PhoneAndroidOutlinedIcon from "@material-ui/icons/PhoneAndroidOutlined";
 import Button from "@material-ui/core/Button";
+import LinearProgress from "@material-ui/core/LinearProgress";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -24,8 +25,10 @@ import { TransitionProps } from "@material-ui/core/transitions";
 import { InputLabel } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import axios from "axios";
 import FormInput from "../atoms/FormInput";
-import { updateUserProfile } from "../../store/actions/userActions";
+import { signOut, updateUserProfile } from "../../store/actions/userActions";
+import defaultAvatar from "../../assets/svg/undraw_profile_pic_ic5t.svg";
 
 interface FormValues {
   fullName: string;
@@ -117,6 +120,13 @@ const useStyles = makeStyles((theme: Theme) =>
     alert: {
       backgroundColor: "transparent",
     },
+    uploadingLoading: {
+      background: "linear-gradient(to right, #12c2e9, #c471ed, #f64f59)",
+      marginTop: 5,
+    },
+    updatingLoading: {
+      marginTop: 5,
+    },
   }),
 );
 
@@ -128,11 +138,13 @@ const ProfileCard: React.FC = () => {
   const userSignIn = useSelector((state: RootStateOrAny) => state.userSignIn);
   const userUpdateProfile = useSelector((state: RootStateOrAny) => state.userUpdateProfile);
   const { userInfo } = userSignIn;
-  const { error, success } = userUpdateProfile;
+  const { error, success, loading } = userUpdateProfile;
+  const [uploadingLoading, setUploadingLoading] = useState(false);
   const errorMessage =
     error === "Email must be unique"
       ? "User with this email already exist on this platform, please choose another email"
       : "";
+  const [image, setImage] = useState(defaultAvatar);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
@@ -141,8 +153,8 @@ const ProfileCard: React.FC = () => {
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmNewPassword, setConfirmNewPassword] = useState<string>("");
   const [birthDate, setBirthDate] = useState<string>("");
-  const [phone, setPhone] = useState<number>(0);
-  const [avatar, setAvatar] = useState<string>("");
+  const [phone, setPhone] = useState(0);
+  const [avatar, setAvatar] = useState(defaultAvatar);
   const classes = useStyles();
   const regex = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/;
   const cutDataToMinutes = userInfo?.data?.BirthDate.match(regex);
@@ -174,16 +186,38 @@ const ProfileCard: React.FC = () => {
     formState: { errors },
   } = useForm<FormValues>({ resolver: yupResolver(schema) });
 
-  const onSubmit: SubmitHandler<FormValues> = data => {
+  const uploadImage = async () => {
+    const formData = new FormData();
+    formData.append("file", image);
+    formData.append("upload_preset", "l0hqmgyr");
+    console.log("Form data", formData);
+    console.log("image", image);
+    try {
+      setUploadingLoading(true);
+      const resp = await axios.post(
+        "https://api.cloudinary.com/v1_1/duk476xud/image/upload",
+        formData,
+      );
+      return resp.data.url;
+    } catch (e) {
+      console.log(e);
+    }
+    return defaultAvatar;
+  };
+
+  const onSubmit: SubmitHandler<FormValues> = async data => {
+    const url = await uploadImage();
+    console.log("url", url);
+    setAvatar(url);
     setFullName(data.fullName);
     setEmail(data.email);
     setNewPassword(data.newPassword || "");
     setConfirmNewPassword(data.confirmNewPassword || "");
     setBirthDate(data.birthDate);
     setPhone(data.phone);
-    setAvatar(data.avatar || "");
 
     handleClickOpen();
+    console.log("avatar", avatar);
   };
 
   const handleAgreeButton = () => {
@@ -195,6 +229,9 @@ const ProfileCard: React.FC = () => {
       );
     }
     handleClose();
+    setUploadingLoading(false);
+    handleAlertClose();
+    //dispatch(signOut());
   };
 
   const handleDisagreeButton = () => {
@@ -356,8 +393,29 @@ const ProfileCard: React.FC = () => {
             type="number"
           />
           <InputLabel className={classes.label}>Avatar Image</InputLabel>
+          <input
+            type="file"
+            aria-label="File browser example"
+            onChange={event => setImage(event.target.files![0] as any)}
+          />
           <span className={classes.span}>{errors.avatar?.message}</span>
           <input type="submit" value="Update Profile" className={classes.updateProfile} />
+          {uploadingLoading ? (
+            <span>
+              {" "}
+              <LinearProgress className={classes.uploadingLoading} /> <p>Data analysis ...</p>
+            </span>
+          ) : (
+            ""
+          )}
+          {loading ? (
+            <span>
+              <LinearProgress color="secondary" className={classes.updatingLoading} />{" "}
+              <p>Updating profile ...</p>
+            </span>
+          ) : (
+            ""
+          )}
         </form>
       </Paper>
       <Dialog
@@ -399,7 +457,7 @@ const ProfileCard: React.FC = () => {
         <Snackbar
           className={classes.alert}
           open={alertOpen}
-          autoHideDuration={3000}
+          autoHideDuration={2000}
           onClose={handleAlertClose}>
           <Alert severity="success">Successfully updated profile, please sign in again</Alert>
         </Snackbar>

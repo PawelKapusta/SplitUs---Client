@@ -17,6 +17,7 @@ interface Props {
   defaultValue?: any;
   setError?: any;
   setValue?: any;
+  multiline?: boolean;
 }
 
 const useStyles = makeStyles(
@@ -50,7 +51,7 @@ const FormInput: React.FC<Props> = ({
   type,
   required,
   defaultValue,
-
+  multiline,
   setValue,
 }) => {
   const classes = useStyles();
@@ -73,6 +74,7 @@ const FormInput: React.FC<Props> = ({
             onChange={e => setValue(name, e.target.value)}
             variant="filled"
             margin="normal"
+            multiline={multiline}
             InputProps={InputProps}
             type={type}
             required={required}

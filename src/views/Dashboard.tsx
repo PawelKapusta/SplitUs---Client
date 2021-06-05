@@ -5,10 +5,11 @@ import CardMedia from "@material-ui/core/CardMedia";
 import Grid from "@material-ui/core/Grid";
 import { NavLink } from "react-router-dom";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
-import { RootStateOrAny, useSelector } from "react-redux";
+import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import Snackbar from "@material-ui/core/Snackbar";
 import Button from "../components/atoms/Button";
 import auth from "../auth";
+import { listUsers } from "../store/actions/userActions";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -63,12 +64,14 @@ const Dashboard: React.FC = () => {
   const userSignIn = useSelector((state: RootStateOrAny) => state.userSignIn);
   const { userInfo } = userSignIn;
   const classes = useStyles();
+  const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const firstLogin = sessionStorage.getItem("firstSignIn");
   const firstRender = localStorage.getItem("firstRender");
 
   useEffect(() => {
     setOpen(true);
+    dispatch(listUsers());
   }, []);
 
   const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
@@ -116,7 +119,7 @@ const Dashboard: React.FC = () => {
       </Grid>
       {userInfo && firstLogin && firstRender ? (
         <div className={classes.snackbar}>
-          <Snackbar open={open} autoHideDuration={4000} onClose={handleClose}>
+          <Snackbar open={open} autoHideDuration={3500} onClose={handleClose}>
             <Alert severity="info">{`Welcome ${userInfo?.data?.FullName} our new user. We hope you will enjoyed well :)`}</Alert>
           </Snackbar>
         </div>
@@ -125,7 +128,7 @@ const Dashboard: React.FC = () => {
       )}
       {userInfo && !firstLogin && firstRender ? (
         <div className={classes.snackbar}>
-          <Snackbar open={open} autoHideDuration={4000} onClose={handleClose}>
+          <Snackbar open={open} autoHideDuration={1500} onClose={handleClose}>
             <Alert severity="info">{`${userInfo?.data?.message}  ${userInfo?.data?.FullName}`}</Alert>
           </Snackbar>
         </div>
