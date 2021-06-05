@@ -18,6 +18,7 @@ import GroupCreator from "./views/GroupCreator";
 import Users from "./views/Users";
 import Groups from "./views/Groups";
 import Bills from "./views/Bills";
+import GroupDetails from "./views/GroupDetails";
 
 const useStyles = makeStyles({
   foundError: {
@@ -44,7 +45,8 @@ const App: React.FC = () => {
         <ProtectedRoute exact path="/" component={Dashboard} />
         <ProtectedRoute path="/profile" component={Profile} />
         <ProtectedRoute path="/membership" component={Membership} />
-        <ProtectedRoute path="/groups/new" component={GroupCreator} />
+        <ProtectedRoute path="/groups/new" exact component={GroupCreator} />
+        <ProtectedRoute path="/groups/:id" exact component={GroupDetails} />
         <AdminRoute exact path="/users" component={Users} />
         <AdminRoute exact path="/groups" component={Groups} />
         <AdminRoute exact path="/bills" component={Bills} />

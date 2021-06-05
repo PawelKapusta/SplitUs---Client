@@ -5,7 +5,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import CancelIcon from "@material-ui/icons/Cancel";
 import SaveIcon from "@material-ui/icons/Save";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import VpnKeyIcon from "@material-ui/icons/VpnKey";
+import LaunchIcon from "@material-ui/icons/Launch";
 
 interface Props {
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
@@ -18,16 +18,11 @@ const buttonProps: any = {
     color: "primary",
     variant: "contained",
     startIcon: <EditIcon />,
-    fullWidth: true,
   },
   delete_btn: {
     color: "secondary",
     variant: "contained",
     startIcon: <DeleteIcon />,
-    fullWidth: true,
-    style: {
-      marginLeft: 5,
-    },
   },
   signIn_btn: {
     variant: "contained",
@@ -57,6 +52,13 @@ const buttonProps: any = {
       height: 48,
       padding: "0 30px",
       marginBottom: 5,
+    },
+  },
+  open_btn: {
+    variant: "contained",
+    startIcon: <LaunchIcon />,
+    style: {
+      background: "linear-gradient(to right, #1cd8d2, #93edc7)",
     },
   },
   cancel_btn: {
