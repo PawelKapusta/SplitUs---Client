@@ -3,19 +3,33 @@ import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { makeStyles, Theme } from "@material-ui/core/styles";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
+import InputLabel from "@material-ui/core/InputLabel";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import LinearProgress from "@material-ui/core/LinearProgress";
+import MultiSelect from "react-multi-select-component";
+import SearchIcon from "@material-ui/icons/Search";
+import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import FingerprintIcon from "@material-ui/icons/Fingerprint";
 import DescriptionIcon from "@material-ui/icons/Description";
+import EuroIcon from "@material-ui/icons/Euro";
+import AccountBalanceWalletIcon from "@material-ui/icons/AccountBalanceWallet";
+import Dialog from "@material-ui/core/Dialog";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import Paper, { PaperProps } from "@material-ui/core/Paper";
+import Draggable from "react-draggable";
 import { getListUsersOfGroup, updateGroup } from "../../store/actions/groupsActions";
 import Button from "../atoms/Button";
 import FormInput from "../atoms/FormInput";
+import defaultAvatar from "../../assets/svg/undraw_profile_pic_ic5t.svg";
+import defaultImage from "../../assets/images/defaultImage.jpg";
+import { updateBill } from "../../store/actions/billsActions";
 
 interface Props {
-  group: any;
+  bill: any;
   handleClose: any;
 }
 
@@ -23,6 +37,10 @@ interface FormValues {
   name: string;
   description: string;
   dataCreated: string;
+  dataEnd: string;
+  currencyCode: string;
+  debt: number;
+  billImage?: string;
   members: any;
 }
 
@@ -120,45 +138,45 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const GroupEdit: React.FC<Props> = ({ group, handleClose }) => {
+const OwnerBillEdit: React.FC<Props> = ({ bill, handleClose }) => {
   const selectedUsersArray: { label: string; value: string }[] = [];
   const options: { label: string; value: string }[] = [];
-  const userList = useSelector((state: RootStateOrAny) => state.userList);
-  const { users, loading: usersListLoading } = userList;
+  const updatedBill = useSelector((state: RootStateOrAny) => state.updatedBill);
+  const { loading: loadingUpdateOwnerBill, success: updateOwnerBillsSuccess } = updatedBill;
   const dispatch = useDispatch();
-  const usersOfGroup = useSelector((state: RootStateOrAny) => state.usersOfGroup);
-  const { usersOfGroupList, loading: loadingUsersOfGroup } = usersOfGroup;
-  const groupUpdate = useSelector((state: RootStateOrAny) => state.groupUpdate);
-  const { success: successUpdateGroup, loading: loadingUpdateGroup } = groupUpdate;
   const regex = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/;
-  const cutDataToMinutes = group?.DataCreated.match(regex);
+  const cutDataCreatedToMinutes = bill?.DataCreated.match(regex);
+  const cutDataEndToMinutes = bill?.DataEnd.match(regex);
   const classes = useStyles();
 
-  users?.map((user: any) =>
-    options.push({
-      label: `${user.FullName} email: ${user.Email}`,
-      value: `${user.ID}`,
-    }),
-  );
+  // users?.map((user: any) =>
+  //   options.push({
+  //     label: `${user.FullName} email: ${user.Email}`,
+  //     value: `${user.ID}`,
+  //   }),
+  // );
 
-  usersOfGroupList?.map((user: any) =>
-    selectedUsersArray.push({
-      label: `${user.FullName} email: ${user.Email}`,
-      value: `${user.ID}`,
-    }),
-  );
-
-  const [selected, setSelected] = useState(selectedUsersArray);
-
-  useEffect(() => {
-    dispatch(getListUsersOfGroup(group.ID));
-    setSelected(selectedUsersArray);
-  }, []);
+  // usersOfGroupList?.map((user: any) =>
+  //   selectedUsersArray.push({
+  //     label: `${user.FullName} email: ${user.Email}`,
+  //     value: `${user.ID}`,
+  //   }),
+  // );
+  //
+  // const [selected, setSelected] = useState(selectedUsersArray);
+  //
+  // useEffect(() => {
+  //   //dispatch(getListUsersOfGroup(group.ID));
+  //   setSelected(selectedUsersArray);
+  // }, []);
 
   const schema = yup.object().shape({
     name: yup.string().required("Name is a required field"),
     description: yup.string().required("Description is a required field"),
     dataCreated: yup.string().required("DataCreated is a required field"),
+    dataEnd: yup.string().required("DataEnd is a required field"),
+    currencyCode: yup.string().required("Currency code is a required field"),
+    debt: yup.number().required("Debt is a required field"),
   });
 
   const handleCloseAll = () => {
@@ -174,23 +192,34 @@ const GroupEdit: React.FC<Props> = ({ group, handleClose }) => {
   } = useForm<FormValues>({ resolver: yupResolver(schema) });
 
   const onSubmit: SubmitHandler<FormValues> = async values => {
-    await dispatch(updateGroup(group.ID, values.name, values.description, values.dataCreated));
+    await dispatch(
+      updateBill(
+        bill.ID,
+        values.name,
+        values.description,
+        values.dataCreated,
+        values.dataEnd,
+        values.currencyCode,
+        values.debt,
+      ),
+    );
     handleClose();
-    console.log("selected", selected);
+
+    console.log("values", values);
   };
 
   return (
     <div className={classes.root}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogTitle className={classes.editDialogTitle} id="alert-dialog-slide-title">
-          EDIT GROUP
+          EDIT BILL
         </DialogTitle>
         <FormInput
           labelTitle="Name"
           name="name"
           control={control}
           register={register}
-          defaultValue={group.Name}
+          defaultValue={bill.Name}
           errors={errors?.name}
           setValue={setValue}
           numberRows={1}
@@ -209,7 +238,7 @@ const GroupEdit: React.FC<Props> = ({ group, handleClose }) => {
           control={control}
           register={register}
           errors={errors?.description}
-          defaultValue={group.Description}
+          defaultValue={bill.Description}
           setValue={setValue}
           numberRows={8}
           multiline={true}
@@ -227,7 +256,7 @@ const GroupEdit: React.FC<Props> = ({ group, handleClose }) => {
           name="dataCreated"
           control={control}
           register={register}
-          defaultValue={cutDataToMinutes[0]}
+          defaultValue={cutDataCreatedToMinutes[0]}
           errors={errors?.dataCreated}
           setValue={setValue}
           required={true}
@@ -235,6 +264,58 @@ const GroupEdit: React.FC<Props> = ({ group, handleClose }) => {
           InputProps=""
           type="datetime-local"
         />
+        <FormInput
+          labelTitle="Data End"
+          name="dataEnd"
+          control={control}
+          register={register}
+          defaultValue={cutDataEndToMinutes[0]}
+          errors={errors?.dataEnd}
+          setValue={setValue}
+          required={true}
+          numberRows={1}
+          InputProps=""
+          type="datetime-local"
+        />
+        <FormInput
+          labelTitle="Currency Code"
+          name="currencyCode"
+          control={control}
+          register={register}
+          errors={errors?.currencyCode}
+          defaultValue={bill.CurrencyCode}
+          setValue={setValue}
+          numberRows={1}
+          multiline={true}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <EuroIcon className={classes.icon} />
+              </InputAdornment>
+            ),
+          }}
+          type="text"
+        />
+        <FormInput
+          labelTitle="Debt"
+          name="debt"
+          control={control}
+          register={register}
+          errors={errors?.debt}
+          defaultValue={bill.Debt}
+          setValue={setValue}
+          numberRows={1}
+          multiline={true}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <AccountBalanceWalletIcon className={classes.icon} />
+              </InputAdornment>
+            ),
+          }}
+          type="number"
+        />
+
         {/*<InputLabel className={classes.label}>Group Members</InputLabel>*/}
         {/*{loadingUsersOfGroup ? (*/}
         {/*  <LinearProgress />*/}
@@ -250,15 +331,14 @@ const GroupEdit: React.FC<Props> = ({ group, handleClose }) => {
         {/*    />*/}
         {/*  </div>*/}
         {/*)}*/}
-        {loadingUpdateGroup ? (
+        {loadingUpdateOwnerBill ? (
           <span>
             {" "}
-            <LinearProgress className={classes.uploadingLoading} /> <p>Updating group ...</p>
+            <LinearProgress className={classes.uploadingLoading} /> <p>Updating bill ...</p>
           </span>
         ) : (
           ""
         )}
-
         <DialogActions className={classes.buttons}>
           <Button onClick={handleCloseAll} type="cancel_btn" text="Cancel" />
           <input className={classes.submitButton} type="submit" value="Save" />
@@ -268,4 +348,4 @@ const GroupEdit: React.FC<Props> = ({ group, handleClose }) => {
   );
 };
 
-export default GroupEdit;
+export default OwnerBillEdit;

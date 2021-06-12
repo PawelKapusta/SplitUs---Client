@@ -11,18 +11,19 @@ import {
   GROUP_DETAILS_REQUEST,
   GROUP_DETAILS_SUCCESS,
   GROUP_DETAILS_FAIL,
+  DELETE_GROUP_REQUEST,
+  DELETE_GROUP_SUCCESS,
+  DELETE_GROUP_FAIL,
+  UPDATE_GROUP_REQUEST,
+  UPDATE_GROUP_SUCCESS,
+  UPDATE_GROUP_FAIL,
 } from "../../constants/groupsConstants";
 import {
-  ADD_GROUPUSERS_REQUEST,
-  ADD_GROUPUSERS_SUCCESS,
-  ADD_GROUPUSERS_FAIL,
   GET_USERSOFGROUP_REQUEST,
   GET_USERSOFGROUP_SUCCESS,
   GET_USERSOFGROUP_FAIL,
 } from "../../constants/groupsUsersConstants";
 import http from "../../lib/axios";
-
-import auth from "../../auth";
 
 export const getListGroups = () => async (dispatch: any, getState: any) => {
   dispatch({ type: GROUPS_LIST_REQUEST });
@@ -35,40 +36,11 @@ export const getListGroups = () => async (dispatch: any, getState: any) => {
         Authorization: `Bearer ${userInfo.data.token}`,
       },
     });
-    dispatch({ type: GROUPS_LIST_SUCCESS, payload: data });
+    dispatch({ type: GROUPS_LIST_SUCCESS, payload: data?.groups });
   } catch (error) {
     const message =
       error.response && error.response.data.message ? error.response.data.message : error.message;
     dispatch({ type: GROUPS_LIST_FAIL, payload: message });
-  }
-};
-
-export const addUsersToGroup = (GroupId: string, usersIdArray: string[]) => async (
-  dispatch: any,
-  getState: any,
-) => {
-  dispatch({ type: ADD_GROUPUSERS_REQUEST });
-  try {
-    const {
-      userSignIn: { userInfo },
-    } = getState();
-    const { data } = await http.post(
-      "/groupsUsers",
-      {
-        GroupId,
-        usersIdArray,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${userInfo?.data?.token}`,
-        },
-      },
-    );
-    dispatch({ type: ADD_GROUPUSERS_SUCCESS, payload: data });
-  } catch (error) {
-    const message =
-      error.response && error.response.data.message ? error.response.data.message : error.message;
-    dispatch({ type: ADD_GROUPUSERS_FAIL, payload: message });
   }
 };
 
@@ -97,7 +69,7 @@ export const getDetailsGroup = (id: string) => async (dispatch: any, getState: a
     const {
       userSignIn: { userInfo },
     } = getState();
-    const { data } = await http.get(`groups/${id}`, {
+    const { data } = await http.get(`/groups/${id}`, {
       headers: {
         Authorization: `Bearer ${userInfo?.data?.token}`,
       },
@@ -132,10 +104,12 @@ export const getListUsersOfGroup = (id: string) => async (dispatch: any, getStat
   }
 };
 
-export const createGroup = (Name: string, Description: string, DataCreated: string) => async (
-  dispatch: any,
-  getState: any,
-) => {
+export const createGroup = (
+  Name: string,
+  Description: string,
+  DataCreated: string,
+  usersIdArray: string[],
+) => async (dispatch: any, getState: any) => {
   dispatch({ type: CREATE_GROUP_REQUEST });
   try {
     const {
@@ -147,6 +121,7 @@ export const createGroup = (Name: string, Description: string, DataCreated: stri
         Name,
         Description,
         DataCreated,
+        usersIdArray,
       },
       {
         headers: {
@@ -159,5 +134,48 @@ export const createGroup = (Name: string, Description: string, DataCreated: stri
     const message =
       error.response && error.response.data.message ? error.response.data.message : error.message;
     dispatch({ type: CREATE_GROUP_FAIL, payload: message });
+  }
+};
+
+export const deleteGroup = (id: string) => async (dispatch: any, getState: any) => {
+  dispatch({ type: DELETE_GROUP_REQUEST, payload: id });
+  const {
+    userSignIn: { userInfo },
+  } = getState();
+  try {
+    const { data } = await http.delete(`/groups/${id}`, {
+      headers: { Authorization: `Bearer ${userInfo?.data?.token}` },
+    });
+    dispatch({ type: DELETE_GROUP_SUCCESS, payload: data });
+  } catch (error) {
+    const message =
+      error.response && error.response.data.message ? error.response.data.message : error.message;
+    dispatch({ type: DELETE_GROUP_FAIL, payload: message });
+  }
+};
+
+export const updateGroup = (
+  id: string,
+  Name: string,
+  Description: string,
+  DataCreated: string,
+) => async (dispatch: any, getState: any) => {
+  dispatch({ type: UPDATE_GROUP_REQUEST, payload: { Name, Description, DataCreated } });
+  const {
+    userSignIn: { userInfo },
+  } = getState();
+  try {
+    const { data } = await http.put(
+      `/groups/${id}`,
+      { Name, Description, DataCreated },
+      {
+        headers: { Authorization: `Bearer ${userInfo?.data?.token}` },
+      },
+    );
+    dispatch({ type: UPDATE_GROUP_SUCCESS, payload: data });
+  } catch (error) {
+    const message =
+      error.response && error.response.data.message ? error.response.data.message : error.message;
+    dispatch({ type: UPDATE_GROUP_FAIL, error: message });
   }
 };

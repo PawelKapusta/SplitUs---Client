@@ -6,6 +6,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import SaveIcon from "@material-ui/icons/Save";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import LaunchIcon from "@material-ui/icons/Launch";
+import AddIcon from "@material-ui/icons/Add";
 
 interface Props {
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
@@ -70,6 +71,18 @@ const buttonProps: any = {
     color: "secondary",
     variant: "outlined",
     startIcon: <SaveIcon />,
+  },
+  create_bill_btn: {
+    variant: "contained",
+    startIcon: <AddIcon />,
+    style: {
+      position: "fixed",
+      right: 20,
+      bottom: 18,
+      background: "#FFC312",
+      height: 60,
+      zIndex: 120,
+    },
   },
 };
 

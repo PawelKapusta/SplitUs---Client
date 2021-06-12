@@ -18,6 +18,9 @@ import {
   USER_UPDATE_PROFILE_FAIL,
   USER_UPDATE_PROFILE_REQUEST,
   USER_UPDATE_PROFILE_SUCCESS,
+  USER_ADMIN_UPDATE_REQUEST,
+  USER_ADMIN_UPDATE_FAIL,
+  USER_ADMIN_UPDATE_SUCCESS,
 } from "../../constants/usersConstatnts";
 import http from "../../lib/axios";
 import auth from "../../auth";
@@ -133,7 +136,6 @@ export const updateUserProfile = (
     );
     console.log("profile update", data);
     dispatch({ type: USER_UPDATE_PROFILE_SUCCESS, payload: data?.user });
-    dispatch({ type: USER_SIGNIN_SUCCESS, payload: data?.user });
   } catch (error) {
     console.log("detail actions error", error);
     const message =
@@ -142,7 +144,36 @@ export const updateUserProfile = (
   }
 };
 
-export const deleteUser = (userId: number) => async (dispatch: any, getState: any) => {
+export const updateUser = (id: string, isAdmin: boolean, isBlocked: boolean) => async (
+  dispatch: any,
+  getState: any,
+) => {
+  dispatch({
+    type: USER_ADMIN_UPDATE_REQUEST,
+    payload: { isAdmin, isBlocked },
+  });
+  const {
+    userSignIn: { userInfo },
+  } = getState();
+  try {
+    const { data } = await http.put(
+      `/users/${id}`,
+      { isAdmin, isBlocked },
+      {
+        headers: { Authorization: `Bearer ${userInfo?.data?.token}` },
+      },
+    );
+    console.log("admin user update", data);
+    dispatch({ type: USER_ADMIN_UPDATE_SUCCESS, payload: data?.user });
+  } catch (error) {
+    console.log("detail actions error", error);
+    const message =
+      error.response && error.response.data.message ? error.response.data.message : error.message;
+    dispatch({ type: USER_ADMIN_UPDATE_FAIL, payload: message });
+  }
+};
+
+export const deleteUser = (userId: string) => async (dispatch: any, getState: any) => {
   dispatch({ type: USER_DELETE_REQUEST, payload: userId });
   const {
     userSignIn: { userInfo },

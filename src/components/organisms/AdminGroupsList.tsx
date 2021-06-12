@@ -1,18 +1,17 @@
-import React, { forwardRef, useState } from "react";
-import Paper from "@material-ui/core/Paper";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TablePagination from "@material-ui/core/TablePagination";
-import Grid from "@material-ui/core/Grid";
-import TableRow from "@material-ui/core/TableRow";
-import { makeStyles } from "@material-ui/core/styles";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import React, { useState } from "react";
 import { RootStateOrAny, useSelector } from "react-redux";
-import UserGroupsListBodyContent from "../molecules/UserGroupsListBodyContent";
-import { Column } from "../../styles/footerStyles";
+import Grid from "@material-ui/core/Grid";
+import Paper from "@material-ui/core/Paper";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import TableContainer from "@material-ui/core/TableContainer";
+import Table from "@material-ui/core/Table";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import TableCell from "@material-ui/core/TableCell";
+import TableBody from "@material-ui/core/TableBody";
+import TablePagination from "@material-ui/core/TablePagination";
+import { makeStyles } from "@material-ui/core/styles";
+import AdminGroupsListBodyContent from "../molecules/AdminGroupsListBodyContent";
 
 interface Column {
   id: "Name" | "Description" | "DataCreated";
@@ -21,10 +20,22 @@ interface Column {
   align?: "center";
 }
 
-const columns: Column[] = [
-  { id: "Name", label: "Name", minWidth: 200 },
-  { id: "Description", label: "Description", minWidth: 300 },
-  { id: "DataCreated", label: "DataCreated", minWidth: 200 },
+const groupsColumns: Column[] = [
+  {
+    id: "Name",
+    label: "Name",
+    minWidth: 100,
+  },
+  {
+    id: "Description",
+    label: "Description",
+    minWidth: 100,
+  },
+  {
+    id: "DataCreated",
+    label: "Data Created",
+    minWidth: 150,
+  },
 ];
 
 const useStyles = makeStyles({
@@ -46,9 +57,9 @@ const useStyles = makeStyles({
   },
 });
 
-const UserGroupsList: React.FC = () => {
-  const userGroupsList = useSelector((state: RootStateOrAny) => state.userGroupsList);
-  const { groups, loading } = userGroupsList;
+const AdminGroupsList = () => {
+  const groupsList = useSelector((state: RootStateOrAny) => state.groupsList);
+  const { loading: groupsListLoading, groups } = groupsList;
   const classes = useStyles();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -67,11 +78,11 @@ const UserGroupsList: React.FC = () => {
     <div className={classes.root}>
       <Grid spacing={1} alignContent="center" alignItems="center">
         <Grid item xs="auto" md="auto" lg="auto">
-          <h1 className={classes.title}>My groups</h1>
+          <h1 className={classes.title}>All groups in system</h1>
         </Grid>
         <Grid item xs="auto" md="auto" lg="auto">
           <Paper className={classes.paper}>
-            {loading ? (
+            {groupsListLoading ? (
               <CircularProgress color="inherit" />
             ) : (
               <>
@@ -79,9 +90,9 @@ const UserGroupsList: React.FC = () => {
                   <Table stickyHeader aria-label="sticky table">
                     <TableHead>
                       <TableRow>
-                        {columns.map(column => (
+                        {groupsColumns.map(column => (
                           <TableCell
-                            key={Column.id}
+                            key={column.id}
                             align={column.align}
                             style={{
                               minWidth: column.minWidth,
@@ -94,10 +105,10 @@ const UserGroupsList: React.FC = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      <UserGroupsListBodyContent
+                      <AdminGroupsListBodyContent
                         page={page}
                         rowsPerPage={rowsPerPage}
-                        columns={columns}
+                        columns={groupsColumns}
                       />
                     </TableBody>
                   </Table>
@@ -120,4 +131,4 @@ const UserGroupsList: React.FC = () => {
   );
 };
 
-export default UserGroupsList;
+export default AdminGroupsList;

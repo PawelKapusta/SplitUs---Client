@@ -1,39 +1,41 @@
-import React, { forwardRef, useState } from "react";
-import Paper from "@material-ui/core/Paper";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TablePagination from "@material-ui/core/TablePagination";
-import Grid from "@material-ui/core/Grid";
-import TableRow from "@material-ui/core/TableRow";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import Grid from "@material-ui/core/Grid";
+import Paper from "@material-ui/core/Paper";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import TableContainer from "@material-ui/core/TableContainer";
+import Table from "@material-ui/core/Table";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import TableCell from "@material-ui/core/TableCell";
+import TableBody from "@material-ui/core/TableBody";
+import TablePagination from "@material-ui/core/TablePagination";
 import { RootStateOrAny, useSelector } from "react-redux";
-import UserGroupsListBodyContent from "../molecules/UserGroupsListBodyContent";
-import { Column } from "../../styles/footerStyles";
+import GroupBillsListBodyContent from "../molecules/GroupBillsListBodyContent";
 
 interface Column {
-  id: "Name" | "Description" | "DataCreated";
+  id: "Name" | "Description" | "DataCreated" | "DataEnd" | "CurrencyCode" | "Debt";
   label: string;
   minWidth?: number;
   align?: "center";
 }
 
 const columns: Column[] = [
-  { id: "Name", label: "Name", minWidth: 200 },
-  { id: "Description", label: "Description", minWidth: 300 },
-  { id: "DataCreated", label: "DataCreated", minWidth: 200 },
+  { id: "Name", label: "Name", minWidth: 180 },
+  { id: "Description", label: "Description", minWidth: 250 },
+  { id: "DataCreated", label: "DataCreated", minWidth: 100 },
+  { id: "DataEnd", label: "DataEnd", minWidth: 100 },
+  { id: "CurrencyCode", label: "CurrencyCode", minWidth: 20 },
+  { id: "Debt", label: "Debt", minWidth: 50 },
 ];
 
 const useStyles = makeStyles({
   root: {
-    margin: "2%",
+    margin: "3%",
   },
   title: {
     color: "#ffffff",
-    fontSize: "48px",
+    fontSize: "40px",
     fontFamily: "Signika",
     paddingBottom: "10px",
   },
@@ -46,9 +48,9 @@ const useStyles = makeStyles({
   },
 });
 
-const UserGroupsList: React.FC = () => {
-  const userGroupsList = useSelector((state: RootStateOrAny) => state.userGroupsList);
-  const { groups, loading } = userGroupsList;
+const GroupBillsList: React.FC = () => {
+  const allBillsInGroup = useSelector((state: RootStateOrAny) => state.allBillsInGroup);
+  const { bills, loading: allBillsInGroupLoading } = allBillsInGroup;
   const classes = useStyles();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -67,11 +69,11 @@ const UserGroupsList: React.FC = () => {
     <div className={classes.root}>
       <Grid spacing={1} alignContent="center" alignItems="center">
         <Grid item xs="auto" md="auto" lg="auto">
-          <h1 className={classes.title}>My groups</h1>
+          <h2 className={classes.title}>All bills in this group:</h2>
         </Grid>
         <Grid item xs="auto" md="auto" lg="auto">
           <Paper className={classes.paper}>
-            {loading ? (
+            {allBillsInGroupLoading ? (
               <CircularProgress color="inherit" />
             ) : (
               <>
@@ -81,7 +83,7 @@ const UserGroupsList: React.FC = () => {
                       <TableRow>
                         {columns.map(column => (
                           <TableCell
-                            key={Column.id}
+                            key={column.id}
                             align={column.align}
                             style={{
                               minWidth: column.minWidth,
@@ -94,7 +96,7 @@ const UserGroupsList: React.FC = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      <UserGroupsListBodyContent
+                      <GroupBillsListBodyContent
                         page={page}
                         rowsPerPage={rowsPerPage}
                         columns={columns}
@@ -105,7 +107,7 @@ const UserGroupsList: React.FC = () => {
                 <TablePagination
                   rowsPerPageOptions={[5, 10, 25]}
                   component="div"
-                  count={groups?.length}
+                  count={bills?.length}
                   rowsPerPage={rowsPerPage}
                   page={page}
                   onChangePage={handleChangePage}
@@ -120,4 +122,4 @@ const UserGroupsList: React.FC = () => {
   );
 };
 
-export default UserGroupsList;
+export default GroupBillsList;
