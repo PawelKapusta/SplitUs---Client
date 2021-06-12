@@ -19,8 +19,11 @@ import Paper, { PaperProps } from "@material-ui/core/Paper";
 import Draggable from "react-draggable";
 import Button from "../atoms/Button";
 import GroupEdit from "../templates/GroupEdit";
-import { deleteGroup } from "../../store/actions/groupsActions";
+import { getDetailsGroup } from "../../store/actions/groupsActions";
+import OwnerBillEdit from "../templates/OwnerBillEdit";
+import { deleteBill } from "../../store/actions/billsActions";
 import { DELETE_GROUP_RESET } from "../../constants/groupsConstants";
+import { UPDATE_BILL_RESET } from "../../constants/billsConstants";
 
 interface Props {
   page: number;
@@ -43,7 +46,7 @@ const useStyles = makeStyles({
   alert: {
     backgroundColor: "transparent",
   },
-  groupsLengthWarning: {
+  billsLengthWarning: {
     color: "red",
     marginLeft: 15,
     marginTop: 15,
@@ -59,10 +62,6 @@ const Transition = forwardRef(function Transition(
 });
 /* eslint-enable */
 
-function Alert(props: AlertProps) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
-
 function PaperComponent(props: PaperProps) {
   return (
     <Draggable handle="#draggable-dialog-title" cancel={'[class*="MuiDialogContent-root"]'}>
@@ -71,16 +70,15 @@ function PaperComponent(props: PaperProps) {
   );
 }
 
-const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns }) => {
-  const userGroupsList = useSelector((state: RootStateOrAny) => state.userGroupsList);
-  const { groups } = userGroupsList;
-  const deletedGroup = useSelector((state: RootStateOrAny) => state.deletedGroup);
-  const { loading, success } = deletedGroup;
+const OwnerBillsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns }) => {
+  const ownerBills = useSelector((state: RootStateOrAny) => state.ownerBills);
+  const { bills, success: ownerBillsSuccess } = ownerBills;
+  const deletedBill = useSelector((state: RootStateOrAny) => state.deletedBill);
+  const { loading: deleteBillLoading, success: deleteBillSuccess } = deletedBill;
   const [open, setOpen] = useState(false);
-  const [openAlert, setOpenAlert] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [indexToEdit, setIndexToEdit] = useState(0);
-  const [groupId, setGroupId] = useState("");
+  const [billId, setBillId] = useState("");
   const dispatch = useDispatch();
   const classes = useStyles();
   const history = useHistory();
@@ -88,10 +86,6 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
   const handleConfirmDeleteDialogClickOpen = () => {
     setOpenDeleteDialog(true);
   };
-
-  useEffect(() => {
-    setOpenAlert(true);
-  }, [success]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -102,21 +96,23 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
   };
 
   const handleOpenClick = async (id: string) => {
-    history.push(`/group/${id}`);
+    await dispatch(getDetailsGroup(id));
+    history.push(`/bill/${id}`);
   };
 
-  const handleEditClick = (index: number) => {
+  const handleEditClick = (id: string, index: number) => {
     setIndexToEdit(index);
     handleClickOpen();
+    console.log(id);
   };
 
   const handleDeleteClick = (id: string) => {
-    setGroupId(id);
+    setBillId(id);
     handleConfirmDeleteDialogClickOpen();
   };
 
   const handleConfirmDialogDeleteClose = async () => {
-    await dispatch(deleteGroup(groupId));
+    await dispatch(deleteBill(billId));
     setOpenDeleteDialog(false);
   };
 
@@ -124,27 +120,15 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
     setOpenDeleteDialog(false);
   };
 
-  const handleAlertClose = (event?: React.SyntheticEvent, reason?: string) => {
-    const temporary = event;
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpen(false);
-    setOpenAlert(false);
-    dispatch({ type: DELETE_GROUP_RESET });
-  };
-
   return (
     <>
-      {groups
+      {bills
         ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
         .map((row: any, index: number) => {
           return (
             <TableRow hover role="checkbox" tabIndex={-1} key={uuidv4()}>
               {columns.map((column: any) => {
                 const value = row[column.id];
-                console.log("column", index);
                 return (
                   <TableCell className={classes.row} key={uuidv4()} align={column.align}>
                     {value}
@@ -153,13 +137,17 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
               })}
               <span className={classes.buttons}>
                 <Button
-                  onClick={() => handleOpenClick(groups[index].ID)}
+                  onClick={() => handleOpenClick(bills[index].ID)}
                   type="open_btn"
                   text="Open"
                 />
-                <Button onClick={() => handleEditClick(index)} type="edit_btn" text="Edit" />
                 <Button
-                  onClick={() => handleDeleteClick(groups[index].ID)}
+                  onClick={() => handleEditClick(bills[index].ID, index)}
+                  type="edit_btn"
+                  text="Edit"
+                />
+                <Button
+                  onClick={() => handleDeleteClick(bills[index].ID)}
                   type="delete_btn"
                   text="Delete"
                 />
@@ -167,11 +155,6 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
             </TableRow>
           );
         })}
-      {groups?.length === 0 ? (
-        <h2 className={classes.groupsLengthWarning}>You do not belong to any group</h2>
-      ) : (
-        ""
-      )}
       <Dialog
         open={open}
         TransitionComponent={Transition}
@@ -180,12 +163,11 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
         aria-describedby="alert-dialog-slide-description">
         <DialogContent>
           <DialogContentText id="alert-dialog-slide-description">
-            {console.log("index", indexToEdit)}
-            <GroupEdit group={groups[indexToEdit]} handleClose={handleClose} />
+            <OwnerBillEdit bill={bills[indexToEdit]} handleClose={handleClose} />
           </DialogContentText>
         </DialogContent>
       </Dialog>
-      {loading ? (
+      {deleteBillLoading ? (
         <span>
           <LinearProgress color="secondary" className={classes.loadingDelete} />{" "}
           <p>Deleting group ...</p>
@@ -193,14 +175,8 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
       ) : (
         ""
       )}
-      {success ? (
-        <Snackbar
-          className={classes.alert}
-          open={openAlert}
-          autoHideDuration={2500}
-          onClose={handleAlertClose}>
-          <Alert severity="success">Successfully deleted group</Alert>
-        </Snackbar>
+      {bills?.length === 0 ? (
+        <h2 className={classes.billsLengthWarning}>You haven't created any active bills yet</h2>
       ) : (
         ""
       )}
@@ -214,8 +190,8 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete this group? It will also delete all bills and comments
-            in this group!
+            Are you sure you want to delete this bill? It will also delete all comments and debts in
+            this bill!
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -231,4 +207,4 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
   );
 };
 
-export default UserGroupsListBodyContent;
+export default OwnerBillsListBodyContent;

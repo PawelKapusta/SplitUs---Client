@@ -1,26 +1,27 @@
-import React, { useState, forwardRef, Ref, useEffect } from "react";
-import TableRow from "@material-ui/core/TableRow";
-import TableCell from "@material-ui/core/TableCell";
+import React, { forwardRef, Ref, useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import { TransitionProps } from "@material-ui/core/transitions";
+import Slide from "@material-ui/core/Slide";
+import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+import Paper, { PaperProps } from "@material-ui/core/Paper";
+import Draggable from "react-draggable";
+import TableRow from "@material-ui/core/TableRow";
+import { v4 as uuidv4 } from "uuid";
+import TableCell from "@material-ui/core/TableCell";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
-import Slide from "@material-ui/core/Slide";
-import { TransitionProps } from "@material-ui/core/transitions";
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
-import { v4 as uuidv4 } from "uuid";
-import { useHistory, Redirect } from "react-router";
-import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Snackbar from "@material-ui/core/Snackbar";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
-import Paper, { PaperProps } from "@material-ui/core/Paper";
-import Draggable from "react-draggable";
+import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router";
 import Button from "../atoms/Button";
-import GroupEdit from "../templates/GroupEdit";
-import { deleteGroup } from "../../store/actions/groupsActions";
-import { DELETE_GROUP_RESET } from "../../constants/groupsConstants";
+import OwnerBillEdit from "../templates/OwnerBillEdit";
+import { getDetailsGroup } from "../../store/actions/groupsActions";
+import { deleteBill } from "../../store/actions/billsActions";
+import { UPDATE_BILL_RESET } from "../../constants/billsConstants";
 
 interface Props {
   page: number;
@@ -43,7 +44,7 @@ const useStyles = makeStyles({
   alert: {
     backgroundColor: "transparent",
   },
-  groupsLengthWarning: {
+  billsLengthWarning: {
     color: "red",
     marginLeft: 15,
     marginTop: 15,
@@ -71,16 +72,17 @@ function PaperComponent(props: PaperProps) {
   );
 }
 
-const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns }) => {
-  const userGroupsList = useSelector((state: RootStateOrAny) => state.userGroupsList);
-  const { groups } = userGroupsList;
-  const deletedGroup = useSelector((state: RootStateOrAny) => state.deletedGroup);
-  const { loading, success } = deletedGroup;
+const GroupBillsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns }) => {
+  const allBillsInGroup = useSelector((state: RootStateOrAny) => state.allBillsInGroup);
+  const { bills } = allBillsInGroup;
+  const updatedBill = useSelector((state: RootStateOrAny) => state.updatedBill);
+  const { success: updateOwnerBillsSuccess } = updatedBill;
+  const deletedBill = useSelector((state: RootStateOrAny) => state.deletedBill);
+  const { loading: deleteBillLoading, success: deleteBillSuccess } = deletedBill;
   const [open, setOpen] = useState(false);
-  const [openAlert, setOpenAlert] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [indexToEdit, setIndexToEdit] = useState(0);
-  const [groupId, setGroupId] = useState("");
+  const [billId, setBillId] = useState("");
   const dispatch = useDispatch();
   const classes = useStyles();
   const history = useHistory();
@@ -88,10 +90,6 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
   const handleConfirmDeleteDialogClickOpen = () => {
     setOpenDeleteDialog(true);
   };
-
-  useEffect(() => {
-    setOpenAlert(true);
-  }, [success]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -102,21 +100,23 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
   };
 
   const handleOpenClick = async (id: string) => {
-    history.push(`/group/${id}`);
+    await dispatch(getDetailsGroup(id));
+    history.push(`/bill/${id}`);
   };
 
-  const handleEditClick = (index: number) => {
+  const handleEditClick = (id: string, index: number) => {
     setIndexToEdit(index);
     handleClickOpen();
+    console.log(id);
   };
 
   const handleDeleteClick = (id: string) => {
-    setGroupId(id);
+    setBillId(id);
     handleConfirmDeleteDialogClickOpen();
   };
 
   const handleConfirmDialogDeleteClose = async () => {
-    await dispatch(deleteGroup(groupId));
+    await dispatch(deleteBill(billId));
     setOpenDeleteDialog(false);
   };
 
@@ -124,27 +124,15 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
     setOpenDeleteDialog(false);
   };
 
-  const handleAlertClose = (event?: React.SyntheticEvent, reason?: string) => {
-    const temporary = event;
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpen(false);
-    setOpenAlert(false);
-    dispatch({ type: DELETE_GROUP_RESET });
-  };
-
   return (
     <>
-      {groups
+      {bills
         ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
         .map((row: any, index: number) => {
           return (
             <TableRow hover role="checkbox" tabIndex={-1} key={uuidv4()}>
               {columns.map((column: any) => {
                 const value = row[column.id];
-                console.log("column", index);
                 return (
                   <TableCell className={classes.row} key={uuidv4()} align={column.align}>
                     {value}
@@ -153,13 +141,17 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
               })}
               <span className={classes.buttons}>
                 <Button
-                  onClick={() => handleOpenClick(groups[index].ID)}
+                  onClick={() => handleOpenClick(bills[index].ID)}
                   type="open_btn"
                   text="Open"
                 />
-                <Button onClick={() => handleEditClick(index)} type="edit_btn" text="Edit" />
                 <Button
-                  onClick={() => handleDeleteClick(groups[index].ID)}
+                  onClick={() => handleEditClick(bills[index].ID, index)}
+                  type="edit_btn"
+                  text="Edit"
+                />
+                <Button
+                  onClick={() => handleDeleteClick(bills[index].ID)}
                   type="delete_btn"
                   text="Delete"
                 />
@@ -167,11 +159,6 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
             </TableRow>
           );
         })}
-      {groups?.length === 0 ? (
-        <h2 className={classes.groupsLengthWarning}>You do not belong to any group</h2>
-      ) : (
-        ""
-      )}
       <Dialog
         open={open}
         TransitionComponent={Transition}
@@ -180,12 +167,11 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
         aria-describedby="alert-dialog-slide-description">
         <DialogContent>
           <DialogContentText id="alert-dialog-slide-description">
-            {console.log("index", indexToEdit)}
-            <GroupEdit group={groups[indexToEdit]} handleClose={handleClose} />
+            <OwnerBillEdit bill={bills[indexToEdit]} handleClose={handleClose} />
           </DialogContentText>
         </DialogContent>
       </Dialog>
-      {loading ? (
+      {deleteBillLoading ? (
         <span>
           <LinearProgress color="secondary" className={classes.loadingDelete} />{" "}
           <p>Deleting group ...</p>
@@ -193,14 +179,8 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
       ) : (
         ""
       )}
-      {success ? (
-        <Snackbar
-          className={classes.alert}
-          open={openAlert}
-          autoHideDuration={2500}
-          onClose={handleAlertClose}>
-          <Alert severity="success">Successfully deleted group</Alert>
-        </Snackbar>
+      {bills?.length === 0 ? (
+        <h2 className={classes.billsLengthWarning}>This group does not have any active bills</h2>
       ) : (
         ""
       )}
@@ -214,8 +194,8 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete this group? It will also delete all bills and comments
-            in this group!
+            Are you sure you want to delete this bill? It will also delete all comments and debts in
+            this bill!
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -231,4 +211,4 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
   );
 };
 
-export default UserGroupsListBodyContent;
+export default GroupBillsListBodyContent;

@@ -1,4 +1,4 @@
-import React, { forwardRef, useState } from "react";
+import React, { useState } from "react";
 import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -11,20 +11,23 @@ import TableRow from "@material-ui/core/TableRow";
 import { makeStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { RootStateOrAny, useSelector } from "react-redux";
-import UserGroupsListBodyContent from "../molecules/UserGroupsListBodyContent";
+import OwnerBillsListBodyContent from "../molecules/OwnerBillsListBodyContent";
 import { Column } from "../../styles/footerStyles";
 
 interface Column {
-  id: "Name" | "Description" | "DataCreated";
+  id: "Name" | "Description" | "DataCreated" | "DataEnd" | "CurrencyCode" | "Debt";
   label: string;
   minWidth?: number;
   align?: "center";
 }
 
 const columns: Column[] = [
-  { id: "Name", label: "Name", minWidth: 200 },
+  { id: "Name", label: "Name", minWidth: 100 },
   { id: "Description", label: "Description", minWidth: 300 },
-  { id: "DataCreated", label: "DataCreated", minWidth: 200 },
+  { id: "DataCreated", label: "Data Created", minWidth: 150 },
+  { id: "DataEnd", label: "Data End", minWidth: 150 },
+  { id: "CurrencyCode", label: "Currency Code", minWidth: 50 },
+  { id: "Debt", label: "Debt", minWidth: 50 },
 ];
 
 const useStyles = makeStyles({
@@ -46,9 +49,10 @@ const useStyles = makeStyles({
   },
 });
 
-const UserGroupsList: React.FC = () => {
-  const userGroupsList = useSelector((state: RootStateOrAny) => state.userGroupsList);
-  const { groups, loading } = userGroupsList;
+const UserOwnerBillsList: React.FC = () => {
+  const ownerBills = useSelector((state: RootStateOrAny) => state.ownerBills);
+  const { loading, bills } = ownerBills;
+  console.log(bills);
   const classes = useStyles();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -67,7 +71,7 @@ const UserGroupsList: React.FC = () => {
     <div className={classes.root}>
       <Grid spacing={1} alignContent="center" alignItems="center">
         <Grid item xs="auto" md="auto" lg="auto">
-          <h1 className={classes.title}>My groups</h1>
+          <h1 className={classes.title}>My bills as owner</h1>
         </Grid>
         <Grid item xs="auto" md="auto" lg="auto">
           <Paper className={classes.paper}>
@@ -94,7 +98,7 @@ const UserGroupsList: React.FC = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      <UserGroupsListBodyContent
+                      <OwnerBillsListBodyContent
                         page={page}
                         rowsPerPage={rowsPerPage}
                         columns={columns}
@@ -105,7 +109,7 @@ const UserGroupsList: React.FC = () => {
                 <TablePagination
                   rowsPerPageOptions={[5, 10, 25]}
                   component="div"
-                  count={groups?.length}
+                  count={bills?.length}
                   rowsPerPage={rowsPerPage}
                   page={page}
                   onChangePage={handleChangePage}
@@ -120,4 +124,4 @@ const UserGroupsList: React.FC = () => {
   );
 };
 
-export default UserGroupsList;
+export default UserOwnerBillsList;

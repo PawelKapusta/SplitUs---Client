@@ -18,7 +18,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import FormInput from "../components/atoms/FormInput";
 import { listUsers } from "../store/actions/userActions";
-import { addUsersToGroup, createGroup } from "../store/actions/groupsActions";
+import { createGroup } from "../store/actions/groupsActions";
 
 interface FormValues {
   name: string;
@@ -162,9 +162,7 @@ const GroupCreator: React.FC = () => {
   const userList = useSelector((state: RootStateOrAny) => state.userList);
   const { users, loading } = userList;
   const createdGroup = useSelector((state: RootStateOrAny) => state.createdGroup);
-  const { newGroup, successCreate, loadingCreate, error } = createdGroup;
-  const groupUsers = useSelector((state: RootStateOrAny) => state.groupUsers);
-  const { successAdd, loadingAdd } = groupUsers;
+  const { loadingCreate, successCreate } = createdGroup;
   const [numberOFMembersError, setNumberOfMembersError] = useState(false);
   const [open, setOpen] = useState<boolean>(false);
   const [selected, setSelected] = useState([
@@ -181,10 +179,6 @@ const GroupCreator: React.FC = () => {
   useEffect(() => {
     dispatch(listUsers());
   }, []);
-
-  useEffect(() => {
-    setOpen(true);
-  }, [successAdd]);
 
   const schema = yup.object().shape({
     name: yup.string().required("Name is a required field"),
@@ -206,21 +200,17 @@ const GroupCreator: React.FC = () => {
       setNumberOfMembersError(true);
     } else {
       setNumberOfMembersError(false);
-      await dispatch(createGroup(values.name, values.description, values.dataCreated));
-
-      console.log("wait");
+      selected?.map(user => idUsersAsGroupMembers.push(user.value));
+      console.log("all ids", idUsersAsGroupMembers);
+      await dispatch(
+        createGroup(values.name, values.description, values.dataCreated, idUsersAsGroupMembers),
+      );
       if (successCreate) {
-        setNumberOfMembersError(false);
-
-        selected?.map(user => idUsersAsGroupMembers.push(user.value));
-        console.log(newGroup?.groupId, idUsersAsGroupMembers);
-        await dispatch(addUsersToGroup(newGroup?.groupId, idUsersAsGroupMembers));
-        if (successAdd) {
-          setOpen(true);
-        }
+        setOpen(true);
       }
+      reset();
+      setValue("description", "");
     }
-    reset();
   };
 
   users?.map((user: any) =>
@@ -328,17 +318,9 @@ const GroupCreator: React.FC = () => {
           ) : (
             ""
           )}
-          {loadingAdd ? (
-            <span>
-              <LinearProgress color="secondary" className={classes.addLoading} />{" "}
-              <p>Adding users to group ...</p>
-            </span>
-          ) : (
-            ""
-          )}
         </form>
       </Paper>
-      {successAdd ? (
+      {successCreate ? (
         <Snackbar
           className={classes.alert}
           open={open}

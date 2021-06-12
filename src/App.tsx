@@ -15,10 +15,11 @@ import Register from "./views/Register";
 import Profile from "./views/Profile";
 import Membership from "./views/Membership";
 import GroupCreator from "./views/GroupCreator";
-import Users from "./views/Users";
-import Groups from "./views/Groups";
-import Bills from "./views/Bills";
+import AdminGroups from "./views/AdminGroups";
+import AdminBills from "./views/AdminBills";
 import GroupDetails from "./views/GroupDetails";
+import BillDetails from "./views/BillDetails";
+import AdminUsers from "./views/AdminUsers";
 
 const useStyles = makeStyles({
   foundError: {
@@ -46,10 +47,11 @@ const App: React.FC = () => {
         <ProtectedRoute path="/profile" component={Profile} />
         <ProtectedRoute path="/membership" component={Membership} />
         <ProtectedRoute path="/groups/new" exact component={GroupCreator} />
-        <ProtectedRoute path="/groups/:id" exact component={GroupDetails} />
-        <AdminRoute exact path="/users" component={Users} />
-        <AdminRoute exact path="/groups" component={Groups} />
-        <AdminRoute exact path="/bills" component={Bills} />
+        <ProtectedRoute path="/group/:id" exact component={GroupDetails} />
+        <ProtectedRoute path="/bill/:id" exact component={BillDetails} />
+        <AdminRoute exact path="/users" component={AdminUsers} />
+        <AdminRoute exact path="/groups" component={AdminGroups} />
+        <AdminRoute exact path="/bills" component={AdminBills} />
         <Route path="*" component={() => <div className={classes.foundError}>404 NOT FOUND</div>} />
       </Switch>
       <Footer />

@@ -9,7 +9,6 @@ import Slide from "@material-ui/core/Slide";
 import { TransitionProps } from "@material-ui/core/transitions";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
-import { useHistory, Redirect } from "react-router";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Snackbar from "@material-ui/core/Snackbar";
@@ -18,9 +17,8 @@ import DialogActions from "@material-ui/core/DialogActions";
 import Paper, { PaperProps } from "@material-ui/core/Paper";
 import Draggable from "react-draggable";
 import Button from "../atoms/Button";
-import GroupEdit from "../templates/GroupEdit";
-import { deleteGroup } from "../../store/actions/groupsActions";
-import { DELETE_GROUP_RESET } from "../../constants/groupsConstants";
+import { deleteUser } from "../../store/actions/userActions";
+import AdminUserEdit from "../templates/AdminUserEdit";
 
 interface Props {
   page: number;
@@ -43,7 +41,7 @@ const useStyles = makeStyles({
   alert: {
     backgroundColor: "transparent",
   },
-  groupsLengthWarning: {
+  billsLengthWarning: {
     color: "red",
     marginLeft: 15,
     marginTop: 15,
@@ -71,19 +69,21 @@ function PaperComponent(props: PaperProps) {
   );
 }
 
-const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns }) => {
-  const userGroupsList = useSelector((state: RootStateOrAny) => state.userGroupsList);
-  const { groups } = userGroupsList;
-  const deletedGroup = useSelector((state: RootStateOrAny) => state.deletedGroup);
-  const { loading, success } = deletedGroup;
+const AdminUsersListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns }) => {
+  const userDelete = useSelector((state: RootStateOrAny) => state.userDelete);
+  const { loading: userDeleteLoading, success: userDeleteSuccess } = userDelete;
+  const userList = useSelector((state: RootStateOrAny) => state.userList);
+  const { users } = userList;
+  const userAdminUpdate = useSelector((state: RootStateOrAny) => state.userAdminUpdate);
+  const { loading: userAdminUpdateLoading, success: userAdminUpdateSuccess } = userAdminUpdate;
   const [open, setOpen] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
+  const [openEditAlert, setOpenEditAlert] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [indexToEdit, setIndexToEdit] = useState(0);
-  const [groupId, setGroupId] = useState("");
+  const [userId, setUserId] = useState("");
   const dispatch = useDispatch();
   const classes = useStyles();
-  const history = useHistory();
 
   const handleConfirmDeleteDialogClickOpen = () => {
     setOpenDeleteDialog(true);
@@ -91,7 +91,11 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
 
   useEffect(() => {
     setOpenAlert(true);
-  }, [success]);
+  }, [userDeleteSuccess]);
+
+  useEffect(() => {
+    setOpenEditAlert(true);
+  }, [userAdminUpdateSuccess]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -101,22 +105,18 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
     setOpen(false);
   };
 
-  const handleOpenClick = async (id: string) => {
-    history.push(`/group/${id}`);
-  };
-
   const handleEditClick = (index: number) => {
     setIndexToEdit(index);
     handleClickOpen();
   };
 
   const handleDeleteClick = (id: string) => {
-    setGroupId(id);
+    setUserId(id);
     handleConfirmDeleteDialogClickOpen();
   };
 
   const handleConfirmDialogDeleteClose = async () => {
-    await dispatch(deleteGroup(groupId));
+    await dispatch(deleteUser(userId));
     setOpenDeleteDialog(false);
   };
 
@@ -131,35 +131,38 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
     }
 
     setOpen(false);
-    setOpenAlert(false);
-    dispatch({ type: DELETE_GROUP_RESET });
+  };
+
+  const handleEditAlertClose = (event?: React.SyntheticEvent, reason?: string) => {
+    const temporary = event;
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
+    setOpenEditAlert(false);
   };
 
   return (
     <>
-      {groups
+      {users
         ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
         .map((row: any, index: number) => {
           return (
             <TableRow hover role="checkbox" tabIndex={-1} key={uuidv4()}>
               {columns.map((column: any) => {
                 const value = row[column.id];
-                console.log("column", index);
+
                 return (
                   <TableCell className={classes.row} key={uuidv4()} align={column.align}>
-                    {value}
+                    {column.format && typeof value === "boolean" ? column.format(value) : value}
                   </TableCell>
                 );
               })}
               <span className={classes.buttons}>
-                <Button
-                  onClick={() => handleOpenClick(groups[index].ID)}
-                  type="open_btn"
-                  text="Open"
-                />
                 <Button onClick={() => handleEditClick(index)} type="edit_btn" text="Edit" />
                 <Button
-                  onClick={() => handleDeleteClick(groups[index].ID)}
+                  onClick={() => handleDeleteClick(users[index].ID)}
                   type="delete_btn"
                   text="Delete"
                 />
@@ -167,11 +170,6 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
             </TableRow>
           );
         })}
-      {groups?.length === 0 ? (
-        <h2 className={classes.groupsLengthWarning}>You do not belong to any group</h2>
-      ) : (
-        ""
-      )}
       <Dialog
         open={open}
         TransitionComponent={Transition}
@@ -180,26 +178,36 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
         aria-describedby="alert-dialog-slide-description">
         <DialogContent>
           <DialogContentText id="alert-dialog-slide-description">
-            {console.log("index", indexToEdit)}
-            <GroupEdit group={groups[indexToEdit]} handleClose={handleClose} />
+            <AdminUserEdit user={users[indexToEdit]} handleClose={handleClose} />
           </DialogContentText>
         </DialogContent>
       </Dialog>
-      {loading ? (
+      {userDeleteLoading ? (
         <span>
           <LinearProgress color="secondary" className={classes.loadingDelete} />{" "}
-          <p>Deleting group ...</p>
+          <p>Deleting user ...</p>
         </span>
       ) : (
         ""
       )}
-      {success ? (
+      {userDeleteSuccess ? (
         <Snackbar
           className={classes.alert}
           open={openAlert}
           autoHideDuration={2500}
           onClose={handleAlertClose}>
-          <Alert severity="success">Successfully deleted group</Alert>
+          <Alert severity="success">Successfully deleted user</Alert>
+        </Snackbar>
+      ) : (
+        ""
+      )}
+      {userAdminUpdateSuccess ? (
+        <Snackbar
+          className={classes.alert}
+          open={openEditAlert}
+          autoHideDuration={2400}
+          onClose={handleEditAlertClose}>
+          <Alert severity="success">Successfully updated user</Alert>
         </Snackbar>
       ) : (
         ""
@@ -214,8 +222,8 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete this group? It will also delete all bills and comments
-            in this group!
+            Are you sure you want to delete this user? It will also delete all his bills and
+            comments that he already have made
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -223,7 +231,7 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
             Cancel
           </Button>
           <Button onClick={handleConfirmDialogDeleteClose} type="save_btn" text="Confirm">
-            Save
+            Delete
           </Button>
         </DialogActions>
       </Dialog>
@@ -231,4 +239,4 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
   );
 };
 
-export default UserGroupsListBodyContent;
+export default AdminUsersListBodyContent;

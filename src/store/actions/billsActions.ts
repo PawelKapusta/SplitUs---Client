@@ -1,0 +1,203 @@
+import {
+  BILL_DETAILS_FAIL,
+  BILL_DETAILS_REQUEST,
+  BILL_DETAILS_SUCCESS,
+  BILLS_LIST_FAIL,
+  BILLS_LIST_REQUEST,
+  BILLS_LIST_SUCCESS,
+  CREATE_BILL_FAIL,
+  CREATE_BILL_REQUEST,
+  CREATE_BILL_SUCCESS,
+  DELETE_BILL_FAIL,
+  DELETE_BILL_REQUEST,
+  DELETE_BILL_SUCCESS,
+  GROUP_BILLS_LIST_FAIL,
+  GROUP_BILLS_LIST_REQUEST,
+  GROUP_BILLS_LIST_SUCCESS,
+  OWNERS_BILLS_LIST_FAIL,
+  OWNERS_BILLS_LIST_REQUEST,
+  OWNERS_BILLS_LIST_SUCCESS,
+  UPDATE_BILL_FAIL,
+  UPDATE_BILL_REQUEST,
+  UPDATE_BILL_SUCCESS,
+} from "../../constants/billsConstants";
+import http from "../../lib/axios";
+
+export const getListBills = () => async (dispatch: any, getState: any) => {
+  dispatch({ type: BILLS_LIST_REQUEST });
+  try {
+    const {
+      userSignIn: { userInfo },
+    } = getState();
+    const { data } = await http.get("/bills", {
+      headers: {
+        Authorization: `Bearer ${userInfo?.data?.token}`,
+      },
+    });
+    dispatch({ type: BILLS_LIST_SUCCESS, payload: data?.bills });
+  } catch (error) {
+    const message =
+      error.response && error.response.data.message ? error.response.data.message : error.message;
+    dispatch({ type: BILLS_LIST_FAIL, payload: message });
+  }
+};
+
+export const getAllBillsInGroup = (id: string) => async (dispatch: any, getState: any) => {
+  dispatch({ type: GROUP_BILLS_LIST_REQUEST });
+  try {
+    const {
+      userSignIn: { userInfo },
+    } = getState();
+    const { data } = await http.get(`/bills/group/${id}`, {
+      headers: {
+        Authorization: `Bearer ${userInfo?.data?.token}`,
+      },
+    });
+    console.log("bills data", data);
+    dispatch({ type: GROUP_BILLS_LIST_SUCCESS, payload: data?.bills });
+  } catch (error) {
+    const message =
+      error.response && error.response.data.message ? error.response.data.message : error.message;
+    dispatch({ type: GROUP_BILLS_LIST_FAIL, payload: message });
+  }
+};
+
+export const getOwnerBillsList = (id: string) => async (dispatch: any, getState: any) => {
+  dispatch({ type: OWNERS_BILLS_LIST_REQUEST });
+  try {
+    const {
+      userSignIn: { userInfo },
+    } = getState();
+    const { data } = await http.get(`/bills/owner/${id}`, {
+      headers: {
+        Authorization: `Bearer ${userInfo?.data?.token}`,
+      },
+    });
+    console.log("bills data", data);
+    dispatch({ type: OWNERS_BILLS_LIST_SUCCESS, payload: data?.bills });
+  } catch (error) {
+    const message =
+      error.response && error.response.data.message ? error.response.data.message : error.message;
+    dispatch({ type: OWNERS_BILLS_LIST_FAIL, payload: message });
+  }
+};
+
+export const updateBill = (
+  id: string,
+  Name: string,
+  Description: string,
+  DataCreated: string,
+  DataEnd: string,
+  CurrencyCode: string,
+  Debt: number,
+) => async (dispatch: any, getState: any) => {
+  dispatch({
+    type: UPDATE_BILL_REQUEST,
+    payload: { Name, Description, DataCreated, DataEnd, CurrencyCode, Debt },
+  });
+  const {
+    userSignIn: { userInfo },
+  } = getState();
+  try {
+    const { data } = await http.put(
+      `/bills/owner/${id}`,
+      { Name, Description, DataCreated, DataEnd, CurrencyCode, Debt },
+      {
+        headers: { Authorization: `Bearer ${userInfo?.data?.token}` },
+      },
+    );
+    dispatch({ type: UPDATE_BILL_SUCCESS, payload: data });
+  } catch (error) {
+    const message =
+      error.response && error.response.data.message ? error.response.data.message : error.message;
+    dispatch({ type: UPDATE_BILL_FAIL, error: message });
+  }
+};
+
+export const deleteBill = (id: string) => async (dispatch: any, getState: any) => {
+  dispatch({ type: DELETE_BILL_REQUEST, payload: id });
+  const {
+    userSignIn: { userInfo },
+  } = getState();
+  try {
+    const { data } = await http.delete(`/bills/${id}`, {
+      headers: { Authorization: `Bearer ${userInfo?.data?.token}` },
+    });
+    dispatch({ type: DELETE_BILL_SUCCESS, payload: data });
+  } catch (error) {
+    const message =
+      error.response && error.response.data.message ? error.response.data.message : error.message;
+    dispatch({ type: DELETE_BILL_FAIL, payload: message });
+  }
+};
+
+export const createBill = (
+  Name: string,
+  Description: string,
+  DataCreated: string,
+  DataEnd: string,
+  BillImage: string,
+  CurrencyCode: string,
+  Debt: number,
+  OwnerId: string,
+  CodeQR: string,
+  GroupId: string,
+  usersBillsArray: { userId: string; debt: number }[],
+  isRegulated: boolean,
+) => async (dispatch: any, getState: any) => {
+  dispatch({ type: CREATE_BILL_REQUEST });
+  try {
+    const {
+      userSignIn: { userInfo },
+    } = getState();
+    const { data } = await http.post(
+      `/bills`,
+      {
+        Name,
+        Description,
+        DataCreated,
+        DataEnd,
+        BillImage,
+        CurrencyCode,
+        Debt,
+        OwnerId,
+        CodeQR,
+        GroupId,
+        usersBillsArray,
+        isRegulated,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${userInfo?.data?.token}`,
+        },
+      },
+    );
+    dispatch({ type: CREATE_BILL_SUCCESS, payload: data });
+  } catch (error) {
+    const message =
+      error.response && error.response.data.message ? error.response.data.message : error.message;
+    dispatch({ type: CREATE_BILL_FAIL, payload: message });
+  }
+};
+
+export const getDetailsBill = (id: string) => async (dispatch: any, getState: any) => {
+  dispatch({ type: BILL_DETAILS_REQUEST, payload: id });
+  try {
+    const {
+      userSignIn: { userInfo },
+    } = getState();
+    const { data } = await http.get(`/bills/${id}`, {
+      headers: {
+        Authorization: `Bearer ${userInfo?.data?.token}`,
+      },
+    });
+    console.log("single bill data", data.bill);
+    dispatch({ type: BILL_DETAILS_SUCCESS, payload: data.bill });
+  } catch (error) {
+    dispatch({
+      type: BILL_DETAILS_FAIL,
+      payload:
+        error.response && error.response.data.message ? error.response.data.message : error.message,
+    });
+  }
+};

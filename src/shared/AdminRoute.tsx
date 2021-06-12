@@ -15,7 +15,7 @@ const AdminRoute = (props: PrivateRouteProps) => {
     <Route
       {...rest}
       render={Props => {
-        if (auth.isAuthenticated() && userInfo?.data.isAdmin) {
+        if (auth.isAuthenticated() && userInfo?.data?.isAdmin) {
           return <Component {...Props} />;
         }
         return (

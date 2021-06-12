@@ -11,11 +11,15 @@ import {
   GROUP_DETAILS_REQUEST,
   GROUP_DETAILS_SUCCESS,
   GROUP_DETAILS_FAIL,
+  DELETE_GROUP_REQUEST,
+  DELETE_GROUP_SUCCESS,
+  DELETE_GROUP_FAIL,
+  UPDATE_GROUP_REQUEST,
+  UPDATE_GROUP_SUCCESS,
+  UPDATE_GROUP_FAIL,
+  DELETE_GROUP_RESET,
 } from "../../constants/groupsConstants";
 import {
-  ADD_GROUPUSERS_FAIL,
-  ADD_GROUPUSERS_REQUEST,
-  ADD_GROUPUSERS_SUCCESS,
   GET_USERSOFGROUP_FAIL,
   GET_USERSOFGROUP_REQUEST,
   GET_USERSOFGROUP_SUCCESS,
@@ -50,11 +54,11 @@ export const userGroupsListReducer = (state = { loading: true }, action: any) =>
 export const usersOfGroupReducer = (state = { loading: true }, action: any) => {
   switch (action.type) {
     case GET_USERSOFGROUP_REQUEST:
-      return { loadingUsersOfGroup: true };
+      return { loading: true };
     case GET_USERSOFGROUP_SUCCESS:
-      return { loadingUsersOfGroup: false, usersOfGroupList: action.payload };
+      return { loading: false, success: true, users: action.payload };
     case GET_USERSOFGROUP_FAIL:
-      return { loadingUsersOfGroup: false, error: action.payload };
+      return { loading: false, error: action.payload };
     default:
       return state;
   }
@@ -73,19 +77,6 @@ export const groupDetailsReducer = (state = { group: {} }, action: any) => {
   }
 };
 
-export const addUsersToGroupReducer = (state = {}, action: any) => {
-  switch (action.type) {
-    case ADD_GROUPUSERS_REQUEST:
-      return { loadingAdd: true };
-    case ADD_GROUPUSERS_SUCCESS:
-      return { loadingAdd: false, successAdd: true, groupUsers: action.payload };
-    case ADD_GROUPUSERS_FAIL:
-      return { loadingAdd: false, error: action.payload };
-    default:
-      return state;
-  }
-};
-
 export const groupCreateReducer = (state = {}, action: any) => {
   switch (action.type) {
     case CREATE_GROUP_REQUEST:
@@ -94,6 +85,34 @@ export const groupCreateReducer = (state = {}, action: any) => {
       return { loadingCreate: false, successCreate: true, newGroup: action.payload };
     case CREATE_GROUP_FAIL:
       return { loadingCreate: false, error: action.payload };
+    default:
+      return state;
+  }
+};
+
+export const groupDeleteReducer = (state = {}, action: any) => {
+  switch (action.type) {
+    case DELETE_GROUP_REQUEST:
+      return { loading: true };
+    case DELETE_GROUP_SUCCESS:
+      return { loading: false, success: true };
+    case DELETE_GROUP_FAIL:
+      return { loading: false, error: action.payload };
+    case DELETE_GROUP_RESET:
+      return {};
+    default:
+      return state;
+  }
+};
+
+export const groupUpdateReducer = (state = {}, action: any) => {
+  switch (action.type) {
+    case UPDATE_GROUP_REQUEST:
+      return { loading: true };
+    case UPDATE_GROUP_SUCCESS:
+      return { loading: false, success: true };
+    case UPDATE_GROUP_FAIL:
+      return { loading: false, error: action.payload };
     default:
       return state;
   }

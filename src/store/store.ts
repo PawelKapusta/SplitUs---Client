@@ -8,6 +8,7 @@ import {
   userUpdateProfileReducer,
   userUpdateReducer,
   userDeleteReducer,
+  userAdminUpdateReducer,
 } from "./reducers/userReducer";
 import { currencyListReducer } from "./reducers/currencyReducer";
 import { questionsFaqListReducer } from "./reducers/questionsFaqReducer";
@@ -15,10 +16,19 @@ import {
   groupsListReducer,
   userGroupsListReducer,
   groupCreateReducer,
-  addUsersToGroupReducer,
   usersOfGroupReducer,
   groupDetailsReducer,
+  groupDeleteReducer,
+  groupUpdateReducer,
 } from "./reducers/groupsReducer";
+import {
+  ownerBillsListReducer,
+  billUpdateReducer,
+  billDeleteReducer,
+  billsListReducer,
+  allBillsInGroupReducer,
+  billCreateReducer,
+} from "./reducers/billsReducer";
 
 const initialState = {
   userSignIn: {
@@ -40,9 +50,17 @@ const reducer = combineReducers({
   currencyList: currencyListReducer,
   questionsFaqList: questionsFaqListReducer,
   createdGroup: groupCreateReducer,
-  groupUsers: addUsersToGroupReducer,
+  createdBill: billCreateReducer,
   usersOfGroup: usersOfGroupReducer,
   groupDetails: groupDetailsReducer,
+  deletedGroup: groupDeleteReducer,
+  groupUpdate: groupUpdateReducer,
+  billsList: billsListReducer,
+  ownerBills: ownerBillsListReducer,
+  allBillsInGroup: allBillsInGroupReducer,
+  updatedBill: billUpdateReducer,
+  deletedBill: billDeleteReducer,
+  userAdminUpdate: userAdminUpdateReducer,
 });
 
 declare global {
