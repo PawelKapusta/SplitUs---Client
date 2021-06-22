@@ -137,8 +137,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: 46,
     padding: "0 30px",
     cursor: "pointer",
-    marginTop: 25,
-    marginLeft: 15,
+    marginTop: 35,
+    marginLeft: 30,
   },
   createLoading: {
     background: "linear-gradient(to right, #12c2e9, #c471ed, #f64f59)",

@@ -1,17 +1,17 @@
-import React, { useState, forwardRef, Ref, useEffect } from "react";
+import React, { forwardRef, Ref, useEffect, useState } from "react";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import { makeStyles } from "@material-ui/core/styles";
 import Dialog from "@material-ui/core/Dialog";
+import CheckIcon from "@material-ui/icons/Check";
+import ClearIcon from "@material-ui/icons/Clear";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import Slide from "@material-ui/core/Slide";
 import { TransitionProps } from "@material-ui/core/transitions";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
-import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import LinearProgress from "@material-ui/core/LinearProgress";
-import Snackbar from "@material-ui/core/Snackbar";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
 import Paper, { PaperProps } from "@material-ui/core/Paper";
@@ -57,10 +57,6 @@ const Transition = forwardRef(function Transition(
 });
 /* eslint-enable */
 
-function Alert(props: AlertProps) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
-
 function PaperComponent(props: PaperProps) {
   return (
     <Draggable handle="#draggable-dialog-title" cancel={'[class*="MuiDialogContent-root"]'}>
@@ -71,31 +67,23 @@ function PaperComponent(props: PaperProps) {
 
 const AdminUsersListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns }) => {
   const userDelete = useSelector((state: RootStateOrAny) => state.userDelete);
-  const { loading: userDeleteLoading, success: userDeleteSuccess } = userDelete;
+  const { loading: userDeleteLoading } = userDelete;
   const userList = useSelector((state: RootStateOrAny) => state.userList);
   const { users } = userList;
   const userAdminUpdate = useSelector((state: RootStateOrAny) => state.userAdminUpdate);
-  const { loading: userAdminUpdateLoading, success: userAdminUpdateSuccess } = userAdminUpdate;
+  const { loading: userAdminUpdateLoading } = userAdminUpdate;
+  const userSignIn = useSelector((state: RootStateOrAny) => state.userSignIn);
+  const { userInfo } = userSignIn;
   const [open, setOpen] = useState(false);
-  const [openAlert, setOpenAlert] = useState(false);
-  const [openEditAlert, setOpenEditAlert] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [indexToEdit, setIndexToEdit] = useState(0);
   const [userId, setUserId] = useState("");
   const dispatch = useDispatch();
   const classes = useStyles();
-
+  const filteredUsers = users?.filter((user: any) => user.ID !== userInfo?.data?.ID);
   const handleConfirmDeleteDialogClickOpen = () => {
     setOpenDeleteDialog(true);
   };
-
-  useEffect(() => {
-    setOpenAlert(true);
-  }, [userDeleteSuccess]);
-
-  useEffect(() => {
-    setOpenEditAlert(true);
-  }, [userAdminUpdateSuccess]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -124,28 +112,9 @@ const AdminUsersListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
     setOpenDeleteDialog(false);
   };
 
-  const handleAlertClose = (event?: React.SyntheticEvent, reason?: string) => {
-    const temporary = event;
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpen(false);
-  };
-
-  const handleEditAlertClose = (event?: React.SyntheticEvent, reason?: string) => {
-    const temporary = event;
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpen(false);
-    setOpenEditAlert(false);
-  };
-
   return (
     <>
-      {users
+      {filteredUsers
         ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
         .map((row: any, index: number) => {
           return (
@@ -155,7 +124,9 @@ const AdminUsersListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
 
                 return (
                   <TableCell className={classes.row} key={uuidv4()} align={column.align}>
-                    {column.format && typeof value === "boolean" ? column.format(value) : value}
+                    {column.format && typeof value === "boolean"
+                      ? [value === true ? <CheckIcon /> : <ClearIcon />]
+                      : value}
                   </TableCell>
                 );
               })}
@@ -190,25 +161,11 @@ const AdminUsersListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
       ) : (
         ""
       )}
-      {userDeleteSuccess ? (
-        <Snackbar
-          className={classes.alert}
-          open={openAlert}
-          autoHideDuration={2500}
-          onClose={handleAlertClose}>
-          <Alert severity="success">Successfully deleted user</Alert>
-        </Snackbar>
-      ) : (
-        ""
-      )}
-      {userAdminUpdateSuccess ? (
-        <Snackbar
-          className={classes.alert}
-          open={openEditAlert}
-          autoHideDuration={2400}
-          onClose={handleEditAlertClose}>
-          <Alert severity="success">Successfully updated user</Alert>
-        </Snackbar>
+      {userAdminUpdateLoading ? (
+        <span>
+          <LinearProgress color="secondary" className={classes.loadingDelete} />{" "}
+          <p>Editing user ...</p>
+        </span>
       ) : (
         ""
       )}

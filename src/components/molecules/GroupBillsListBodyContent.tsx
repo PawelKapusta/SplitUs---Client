@@ -79,6 +79,8 @@ const GroupBillsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
   const { success: updateOwnerBillsSuccess } = updatedBill;
   const deletedBill = useSelector((state: RootStateOrAny) => state.deletedBill);
   const { loading: deleteBillLoading, success: deleteBillSuccess } = deletedBill;
+  const createdBill = useSelector((state: RootStateOrAny) => state.createdBill);
+  const { loading: createBillLoading } = createdBill;
   const [open, setOpen] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [indexToEdit, setIndexToEdit] = useState(0);
@@ -174,13 +176,21 @@ const GroupBillsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
       {deleteBillLoading ? (
         <span>
           <LinearProgress color="secondary" className={classes.loadingDelete} />{" "}
-          <p>Deleting group ...</p>
+          <p>Deleting bill ...</p>
         </span>
       ) : (
         ""
       )}
       {bills?.length === 0 ? (
         <h2 className={classes.billsLengthWarning}>This group does not have any active bills</h2>
+      ) : (
+        ""
+      )}
+      {createBillLoading ? (
+        <span>
+          {" "}
+          <LinearProgress className={classes.loadingDelete} /> <p>Creating bill ...</p>
+        </span>
       ) : (
         ""
       )}

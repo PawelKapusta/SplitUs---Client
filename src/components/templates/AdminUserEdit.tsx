@@ -6,7 +6,7 @@ import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 import RemoveCircleIcon from "@material-ui/icons/RemoveCircle";
 import SupervisorAccountOutlinedIcon from "@material-ui/icons/SupervisorAccountOutlined";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, Theme } from "@material-ui/core/styles";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { updateUser } from "../../store/actions/userActions";
 import Button from "../atoms/Button";
@@ -16,7 +16,7 @@ interface Props {
   handleClose: any;
 }
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     textAlign: "center",
     height: 500,
@@ -42,14 +42,29 @@ const useStyles = makeStyles({
     margin: 5,
   },
   confirmButtons: {
-    position: "absolute",
-    right: 15,
-    bottom: 15,
+    position: "relative",
+    [theme.breakpoints.down("xs")]: {
+      top: 10,
+      left: 30,
+      marginBottom: 10,
+    },
+    [theme.breakpoints.up("sm")]: {
+      top: 10,
+      left: 100,
+    },
+    [theme.breakpoints.up("md")]: {
+      top: 25,
+      left: 170,
+    },
+    [theme.breakpoints.up("lg")]: {
+      top: 25,
+      left: 170,
+    },
   },
   saveButtonFixPosition: {
-    marginLeft: 10,
+    marginLeft: 20,
   },
-});
+}));
 
 const AdminUserEdit: React.FC<Props> = ({ user, handleClose }) => {
   const [state, setState] = useState({
@@ -67,8 +82,6 @@ const AdminUserEdit: React.FC<Props> = ({ user, handleClose }) => {
     await dispatch(updateUser(user?.ID, state.checkedAdmin, state.checkedBlocked));
   };
 
-  console.log(state.checkedAdmin);
-  console.log(state.checkedBlocked);
   return (
     <div className={classes.root}>
       <h1 className={classes.title}>EDIT USER ACCESSIBILITY</h1>

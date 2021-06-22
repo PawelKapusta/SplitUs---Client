@@ -25,6 +25,7 @@
     "cloudinary-react": "^1.7.0",
     "emailjs-com": "^2.6.4",
     "husky": "^6.0.0",
+    "material-ui-popup-state": "^1.8.3",
     "moment": "^2.29.1",
     "react": "^17.0.1",
     "react-country-flag": "^2.3.0",

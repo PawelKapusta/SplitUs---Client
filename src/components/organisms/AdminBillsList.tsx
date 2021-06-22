@@ -50,7 +50,7 @@ const useStyles = makeStyles({
 
 const AdminBillsList = () => {
   const billsList = useSelector((state: RootStateOrAny) => state.billsList);
-  const { loading: billsListLoading, bills, success: billsListSuccess } = billsList;
+  const { loading: billsListLoading, bills } = billsList;
   const classes = useStyles();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
