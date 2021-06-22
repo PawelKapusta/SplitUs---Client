@@ -12,6 +12,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import PersonOutlinedIcon from "@material-ui/icons/PersonOutlined";
 import EmailOutlinedIcon from "@material-ui/icons/EmailOutlined";
 import { RootStateOrAny, useSelector } from "react-redux";
+import QRCode from "react-qr-code";
 
 interface FormValues {
   fullName: string;
@@ -30,15 +31,15 @@ const useStyles = makeStyles((theme: Theme) =>
         backgroundColor: "#ffffff",
         [theme.breakpoints.down("sm")]: {
           width: theme.spacing(60),
-          height: theme.spacing(87),
+          height: theme.spacing(95),
         },
         [theme.breakpoints.up("md")]: {
           width: theme.spacing(75),
-          height: theme.spacing(85),
+          height: theme.spacing(98),
         },
         [theme.breakpoints.up("lg")]: {
           width: theme.spacing(90),
-          height: theme.spacing(85),
+          height: theme.spacing(98),
         },
       },
     },
@@ -82,6 +83,13 @@ const useStyles = makeStyles((theme: Theme) =>
         background: "#4169E1",
         color: "white",
       },
+    },
+    codeQrDiv: {
+      marginTop: 25,
+      fontWeight: "bold",
+      fontSize: "1.1em",
+      color: "red",
+      textAlign: "center",
     },
   }),
 );
@@ -211,6 +219,10 @@ const ContactCard: React.FC = () => {
           <span className={classes.span}>{errors.message?.message}</span>
           <input className={classes.submitButton} type="submit" />
         </form>
+        <div className={classes.codeQrDiv}>
+          <QRCode value="mailto:pawelkapusta70@gmail.com" level="L" size={110} />
+          <p>You can also scan this code QR above and write and email from mobile device</p>
+        </div>
       </Paper>
     </div>
   );

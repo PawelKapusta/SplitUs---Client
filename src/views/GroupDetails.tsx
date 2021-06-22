@@ -127,6 +127,8 @@ const GroupDetails: React.FC<Props> = ({ match }) => {
   const { success: updateOwnerBillsSuccess } = updatedBill;
   const deletedBill = useSelector((state: RootStateOrAny) => state.deletedBill);
   const { success: deleteBillSuccess } = deletedBill;
+  const createdBill = useSelector((state: RootStateOrAny) => state.createdBill);
+  const { success: createdBillSuccess } = createdBill;
   const [open, setOpen] = useState(false);
   const classes = useStyles();
   const regex = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/;
@@ -137,7 +139,7 @@ const GroupDetails: React.FC<Props> = ({ match }) => {
     dispatch(getListUsersOfGroup(match?.params?.id));
     dispatch(getAllBillsInGroup(match?.params?.id));
     dispatch({ type: UPDATE_BILL_RESET });
-  }, [updateOwnerBillsSuccess, deleteBillSuccess]);
+  }, [updateOwnerBillsSuccess, deleteBillSuccess, createdBillSuccess]);
 
   console.log("users", users);
 
@@ -149,7 +151,9 @@ const GroupDetails: React.FC<Props> = ({ match }) => {
     setOpen(false);
   };
 
-  const handleCreateBillButtonClick = () => {};
+  const handleCreateBillButtonClick = () => {
+    setOpen(true);
+  };
 
   /* eslint-disable */
   return (

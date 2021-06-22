@@ -14,7 +14,7 @@ export const StyledBurger = styled.div<INav>`
   z-index: 20;
   display: none;
   font-family: "Zilla Slab";
-  @media (max-width: 1464px) {
+  @media (max-width: 1485px) {
     display: flex;
     justify-content: space-around;
     flex-flow: column nowrap;
@@ -49,12 +49,12 @@ export const Nav = styled.nav`
   align-items: center;
   position: relative;
 
-  @media (max-width: 1464px) {
+  @media (max-width: 1485px) {
     width: 100vw;
   }
   span {
     font-size: 30px;
-    @media only screen and (max-width: 1464px) {
+    @media only screen and (max-width: 1485px) {
       font-size: 20px;
       :nth-child(2) {
         font-size: 16px !important;
@@ -91,7 +91,7 @@ export const Ul = styled.ul<INav>`
     cursor: pointer;
     margin: 1.9rem;
   }
-  @media (max-width: 1464px) {
+  @media (max-width: 1485px) {
     flex-flow: column nowrap;
     background-color: #fdfdfdfa;
     position: fixed;
@@ -126,7 +126,7 @@ export const UserMenu = styled.div`
   border-radius: 5px;
   text-align: center;
   color: #ffffff;
-  @media (max-width: 1464px) {
+  @media (max-width: 1485px) {
     margin-top: 10%;
     margin-right: 18%;
     margin-bottom: 10%;
@@ -137,7 +137,7 @@ export const Logo = styled.img`
   margin: 0px 50px 8px 7%;
   width: 130px;
   z-index: 10;
-  @media (max-width: 1464px) {
+  @media (max-width: 1485px) {
     margin: 20px 50px 20px 7%;
   }
 `;
@@ -157,7 +157,7 @@ export const AvatarImage = styled.div`
 export const LogoUl = styled.img`
   margin: auto;
   display: none;
-  @media (max-width: 1464px) {
+  @media (max-width: 1485px) {
     display: flex;
     width: 140px;
     height: 80px;
@@ -166,7 +166,7 @@ export const LogoUl = styled.img`
 `;
 
 export const LoginButton = styled.div`
-  @media (max-width: 1464px) {
+  @media (max-width: 1485px) {
     display: flex;
     width: 160px;
     margin-left: 10px;

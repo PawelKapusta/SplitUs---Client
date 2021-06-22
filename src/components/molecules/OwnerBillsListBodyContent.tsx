@@ -170,7 +170,7 @@ const OwnerBillsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
       {deleteBillLoading ? (
         <span>
           <LinearProgress color="secondary" className={classes.loadingDelete} />{" "}
-          <p>Deleting group ...</p>
+          <p>Deleting bill ...</p>
         </span>
       ) : (
         ""

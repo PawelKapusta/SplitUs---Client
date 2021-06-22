@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, Ref, useEffect } from "react";
+import React, { forwardRef, Ref, useState } from "react";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import { makeStyles } from "@material-ui/core/styles";
@@ -11,7 +11,6 @@ import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import LinearProgress from "@material-ui/core/LinearProgress";
-import Snackbar from "@material-ui/core/Snackbar";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
 import Paper, { PaperProps } from "@material-ui/core/Paper";
@@ -19,7 +18,6 @@ import Draggable from "react-draggable";
 import { useHistory } from "react-router";
 import Button from "../atoms/Button";
 import { deleteGroup } from "../../store/actions/groupsActions";
-import { DELETE_GROUP_RESET } from "../../constants/groupsConstants";
 
 interface Props {
   page: number;
@@ -72,10 +70,9 @@ function PaperComponent(props: PaperProps) {
 
 const AdminGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns }) => {
   const deletedGroup = useSelector((state: RootStateOrAny) => state.deletedGroup);
-  const { loading: deletedGroupLoading, success: deletedGroupSuccess } = deletedGroup;
+  const { loading: deletedGroupLoading } = deletedGroup;
   const groupsList = useSelector((state: RootStateOrAny) => state.groupsList);
   const { groups } = groupsList;
-  const [openAlert, setOpenAlert] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [groupId, setGroupId] = useState("");
   const dispatch = useDispatch();
@@ -85,10 +82,6 @@ const AdminGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, column
   const handleConfirmDeleteDialogClickOpen = () => {
     setOpenDeleteDialog(true);
   };
-
-  useEffect(() => {
-    setOpenAlert(true);
-  }, [deletedGroupSuccess]);
 
   const handleDeleteClick = (id: string) => {
     setGroupId(id);
@@ -102,15 +95,6 @@ const AdminGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, column
 
   const handleDialogDeleteClose = () => {
     setOpenDeleteDialog(false);
-  };
-
-  const handleAlertClose = (event?: React.SyntheticEvent, reason?: string) => {
-    const temporary = event;
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenAlert(false);
-    dispatch({ type: DELETE_GROUP_RESET });
   };
 
   const handleOpenClick = async (id: string) => {
@@ -153,17 +137,6 @@ const AdminGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, column
           <LinearProgress color="secondary" className={classes.loadingDelete} />{" "}
           <p>Deleting group ...</p>
         </span>
-      ) : (
-        ""
-      )}
-      {deletedGroupSuccess ? (
-        <Snackbar
-          className={classes.alert}
-          open={openAlert}
-          autoHideDuration={2500}
-          onClose={handleAlertClose}>
-          <Alert severity="success">Successfully deleted group</Alert>
-        </Snackbar>
       ) : (
         ""
       )}

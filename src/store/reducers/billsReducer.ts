@@ -2,6 +2,9 @@ import {
   BILL_DETAILS_FAIL,
   BILL_DETAILS_REQUEST,
   BILL_DETAILS_SUCCESS,
+  BILL_USERS_FAIL,
+  BILL_USERS_REQUEST,
+  BILL_USERS_SUCCESS,
   BILLS_LIST_FAIL,
   BILLS_LIST_REQUEST,
   BILLS_LIST_SUCCESS,
@@ -17,10 +20,16 @@ import {
   OWNERS_BILLS_LIST_FAIL,
   OWNERS_BILLS_LIST_REQUEST,
   OWNERS_BILLS_LIST_SUCCESS,
+  SETTLE_UP_UPDATE_BILL_FAIL,
+  SETTLE_UP_UPDATE_BILL_REQUEST,
+  SETTLE_UP_UPDATE_BILL_SUCCESS,
   UPDATE_BILL_FAIL,
   UPDATE_BILL_REQUEST,
   UPDATE_BILL_RESET,
   UPDATE_BILL_SUCCESS,
+  UPDATE_CODE_QR_BILL_FAIL,
+  UPDATE_CODE_QR_BILL_REQUEST,
+  UPDATE_CODE_QR_BILL_SUCCESS,
 } from "../../constants/billsConstants";
 
 export const billsListReducer = (state = { loading: true }, action: any) => {
@@ -62,6 +71,19 @@ export const allBillsInGroupReducer = (state = { loading: true }, action: any) =
   }
 };
 
+export const allUsersInBillReducer = (state = { loading: true }, action: any) => {
+  switch (action.type) {
+    case BILL_USERS_REQUEST:
+      return { loading: true };
+    case BILL_USERS_SUCCESS:
+      return { loading: false, users: action.payload };
+    case BILL_USERS_FAIL:
+      return { loading: false, error: action.payload };
+    default:
+      return state;
+  }
+};
+
 export const billUpdateReducer = (state = {}, action: any) => {
   switch (action.type) {
     case UPDATE_BILL_REQUEST:
@@ -72,6 +94,19 @@ export const billUpdateReducer = (state = {}, action: any) => {
       return { loading: false, error: action.payload };
     case UPDATE_BILL_RESET:
       return {};
+    default:
+      return state;
+  }
+};
+
+export const settleUpBillUpdateReducer = (state = {}, action: any) => {
+  switch (action.type) {
+    case SETTLE_UP_UPDATE_BILL_REQUEST:
+      return { loading: true };
+    case SETTLE_UP_UPDATE_BILL_SUCCESS:
+      return { loading: false, success: true };
+    case SETTLE_UP_UPDATE_BILL_FAIL:
+      return { loading: false, error: action.payload };
     default:
       return state;
   }
@@ -95,7 +130,7 @@ export const billDetailsReducer = (state = { bill: {} }, action: any) => {
     case BILL_DETAILS_REQUEST:
       return { loading: true };
     case BILL_DETAILS_SUCCESS:
-      return { loading: false, group: action.payload };
+      return { loading: false, bill: action.payload };
     case BILL_DETAILS_FAIL:
       return { loading: false, error: action.payload };
     default:
@@ -110,6 +145,19 @@ export const billCreateReducer = (state = {}, action: any) => {
     case CREATE_BILL_SUCCESS:
       return { loading: false, success: true, bill: action.payload };
     case CREATE_BILL_FAIL:
+      return { loading: false, error: action.payload };
+    default:
+      return state;
+  }
+};
+
+export const billCodeQrUpdateReducer = (state = {}, action: any) => {
+  switch (action.type) {
+    case UPDATE_CODE_QR_BILL_REQUEST:
+      return { loading: true };
+    case UPDATE_CODE_QR_BILL_SUCCESS:
+      return { loading: false, success: true };
+    case UPDATE_CODE_QR_BILL_FAIL:
       return { loading: false, error: action.payload };
     default:
       return state;

@@ -28,6 +28,10 @@ import {
   billsListReducer,
   allBillsInGroupReducer,
   billCreateReducer,
+  billDetailsReducer,
+  billCodeQrUpdateReducer,
+  allUsersInBillReducer,
+  settleUpBillUpdateReducer,
 } from "./reducers/billsReducer";
 
 const initialState = {
@@ -61,6 +65,10 @@ const reducer = combineReducers({
   updatedBill: billUpdateReducer,
   deletedBill: billDeleteReducer,
   userAdminUpdate: userAdminUpdateReducer,
+  billDetails: billDetailsReducer,
+  updateCodeQrBill: billCodeQrUpdateReducer,
+  usersInBill: allUsersInBillReducer,
+  settleUpUpdateBill: settleUpBillUpdateReducer,
 });
 
 declare global {

@@ -2,6 +2,9 @@ import {
   BILL_DETAILS_FAIL,
   BILL_DETAILS_REQUEST,
   BILL_DETAILS_SUCCESS,
+  BILL_USERS_FAIL,
+  BILL_USERS_REQUEST,
+  BILL_USERS_SUCCESS,
   BILLS_LIST_FAIL,
   BILLS_LIST_REQUEST,
   BILLS_LIST_SUCCESS,
@@ -20,6 +23,12 @@ import {
   UPDATE_BILL_FAIL,
   UPDATE_BILL_REQUEST,
   UPDATE_BILL_SUCCESS,
+  UPDATE_CODE_QR_BILL_FAIL,
+  UPDATE_CODE_QR_BILL_REQUEST,
+  UPDATE_CODE_QR_BILL_SUCCESS,
+  SETTLE_UP_UPDATE_BILL_REQUEST,
+  SETTLE_UP_UPDATE_BILL_SUCCESS,
+  SETTLE_UP_UPDATE_BILL_FAIL,
 } from "../../constants/billsConstants";
 import http from "../../lib/axios";
 
@@ -59,6 +68,49 @@ export const getAllBillsInGroup = (id: string) => async (dispatch: any, getState
     const message =
       error.response && error.response.data.message ? error.response.data.message : error.message;
     dispatch({ type: GROUP_BILLS_LIST_FAIL, payload: message });
+  }
+};
+
+export const settleUpBillUser = (id: string) => async (dispatch: any, getState: any) => {
+  dispatch({
+    type: SETTLE_UP_UPDATE_BILL_REQUEST,
+  });
+  const {
+    userSignIn: { userInfo },
+  } = getState();
+  try {
+    const { data } = await http.put(
+      `/usersBills/${id}`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${userInfo?.data?.token}` },
+      },
+    );
+    dispatch({ type: SETTLE_UP_UPDATE_BILL_SUCCESS, payload: data });
+  } catch (error) {
+    const message =
+      error.response && error.response.data.message ? error.response.data.message : error.message;
+    dispatch({ type: SETTLE_UP_UPDATE_BILL_FAIL, error: message });
+  }
+};
+
+export const getAllUsersInBill = (id: string) => async (dispatch: any, getState: any) => {
+  dispatch({ type: BILL_USERS_REQUEST });
+  try {
+    const {
+      userSignIn: { userInfo },
+    } = getState();
+    const { data } = await http.get(`/usersBills/bill/${id}`, {
+      headers: {
+        Authorization: `Bearer ${userInfo?.data?.token}`,
+      },
+    });
+    console.log("users bill data", data);
+    dispatch({ type: BILL_USERS_SUCCESS, payload: data });
+  } catch (error) {
+    const message =
+      error.response && error.response.data.message ? error.response.data.message : error.message;
+    dispatch({ type: BILL_USERS_FAIL, payload: message });
   }
 };
 
@@ -142,7 +194,7 @@ export const createBill = (
   OwnerId: string,
   CodeQR: string,
   GroupId: string,
-  usersBillsArray: { userId: string; debt: number }[],
+  usersBillsArray: { id: string; value: number }[],
   isRegulated: boolean,
 ) => async (dispatch: any, getState: any) => {
   dispatch({ type: CREATE_BILL_REQUEST });
@@ -199,5 +251,29 @@ export const getDetailsBill = (id: string) => async (dispatch: any, getState: an
       payload:
         error.response && error.response.data.message ? error.response.data.message : error.message,
     });
+  }
+};
+
+export const updateCodeQrValueInBill = (id: string, urlValue: string) => async (
+  dispatch: any,
+  getState: any,
+) => {
+  dispatch({ type: UPDATE_CODE_QR_BILL_REQUEST, payload: { urlValue } });
+  const {
+    userSignIn: { userInfo },
+  } = getState();
+  try {
+    const { data } = await http.put(
+      `/bills/${id}/codeQr`,
+      { urlValue },
+      {
+        headers: { Authorization: `Bearer ${userInfo?.data?.token}` },
+      },
+    );
+    console.log("update data", data);
+    dispatch({ type: UPDATE_CODE_QR_BILL_SUCCESS, payload: data });
+  } catch (e) {
+    const message = e.response && e.response.data.message ? e.response.data.message : e.message;
+    dispatch({ type: UPDATE_CODE_QR_BILL_FAIL, error: message });
   }
 };

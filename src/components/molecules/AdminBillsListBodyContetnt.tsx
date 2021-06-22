@@ -1,17 +1,13 @@
-import React, { useState, forwardRef, Ref, useEffect } from "react";
+import React, { useState } from "react";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import { makeStyles } from "@material-ui/core/styles";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
-import Slide from "@material-ui/core/Slide";
-import { TransitionProps } from "@material-ui/core/transitions";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
-import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import LinearProgress from "@material-ui/core/LinearProgress";
-import Snackbar from "@material-ui/core/Snackbar";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
 import Paper, { PaperProps } from "@material-ui/core/Paper";
@@ -48,19 +44,6 @@ const useStyles = makeStyles({
   },
 });
 
-/* eslint-disable */
-const Transition = forwardRef(function Transition(
-  props: TransitionProps & { children?: React.ReactElement<any, any> },
-  ref: Ref<unknown>,
-) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-/* eslint-enable */
-
-function Alert(props: AlertProps) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
-
 function PaperComponent(props: PaperProps) {
   return (
     <Draggable handle="#draggable-dialog-title" cancel={'[class*="MuiDialogContent-root"]'}>
@@ -71,13 +54,9 @@ function PaperComponent(props: PaperProps) {
 
 const AdminBillsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns }) => {
   const deletedBill = useSelector((state: RootStateOrAny) => state.deletedBill);
-  const { loading: deletedBillLoading, success: deletedBillSuccess } = deletedBill;
+  const { loading: deletedBillLoading } = deletedBill;
   const billsList = useSelector((state: RootStateOrAny) => state.billsList);
   const { bills } = billsList;
-
-  const [open, setOpen] = useState(false);
-
-  const [openAlert, setOpenAlert] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [billId, setBillId] = useState("");
   const dispatch = useDispatch();
@@ -86,18 +65,6 @@ const AdminBillsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
 
   const handleConfirmDeleteDialogClickOpen = () => {
     setOpenDeleteDialog(true);
-  };
-
-  useEffect(() => {
-    setOpenAlert(true);
-  }, [deletedBillSuccess]);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
   };
 
   const handleDeleteClick = (id: string) => {
@@ -112,15 +79,6 @@ const AdminBillsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
 
   const handleDialogDeleteClose = () => {
     setOpenDeleteDialog(false);
-  };
-
-  const handleAlertClose = (event?: React.SyntheticEvent, reason?: string) => {
-    const temporary = event;
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpenAlert(false);
   };
 
   const handleOpenClick = async (id: string) => {
@@ -163,17 +121,6 @@ const AdminBillsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
           <LinearProgress color="secondary" className={classes.loadingDelete} />{" "}
           <p>Deleting bill ...</p>
         </span>
-      ) : (
-        ""
-      )}
-      {deletedBillSuccess ? (
-        <Snackbar
-          className={classes.alert}
-          open={openAlert}
-          autoHideDuration={2500}
-          onClose={handleAlertClose}>
-          <Alert severity="success">Successfully deleted bill</Alert>
-        </Snackbar>
       ) : (
         ""
       )}
