@@ -7,6 +7,7 @@ import ListItem from "@material-ui/core/ListItem";
 import StarsIcon from "@material-ui/icons/Stars";
 import PhoneIcon from "@material-ui/icons/Phone";
 import CloseIcon from "@material-ui/icons/Close";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import Box from "@material-ui/core/Box";
 import Popover from "@material-ui/core/Popover";
 import PopupState, { bindPopover, bindTrigger } from "material-ui-popup-state";
@@ -165,6 +166,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   usersDoneIcon: {
     color: "green",
+    marginBottom: -6,
   },
   usersPhone: {
     fontWeight: "bold",
@@ -537,13 +539,17 @@ const BillDetails: React.FC<Props> = ({ match }) => {
                       vertical: "top",
                       horizontal: "center",
                     }}>
-                    <Box p={2}>
-                      <img
-                        className={classes.billImage}
-                        src={bill?.BillImage ? bill?.BillImage : defaultBillImage}
-                        alt="BillImage"
-                      />
-                    </Box>
+                    {billDetailsLoading ? (
+                      <CircularProgress color="primary" />
+                    ) : (
+                      <Box p={2}>
+                        <img
+                          className={classes.billImage}
+                          src={bill?.BillImage ? bill?.BillImage : defaultBillImage}
+                          alt="BillImage"
+                        />
+                      </Box>
+                    )}
                   </Popover>
                 </div>
               )}

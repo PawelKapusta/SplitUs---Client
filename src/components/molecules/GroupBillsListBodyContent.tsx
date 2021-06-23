@@ -17,6 +17,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
+import LinesEllipsis from "react-lines-ellipsis";
 import Button from "../atoms/Button";
 import OwnerBillEdit from "../templates/OwnerBillEdit";
 import { getDetailsGroup } from "../../store/actions/groupsActions";
@@ -59,7 +60,6 @@ const Transition = forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 /* eslint-enable */
-
 function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -137,7 +137,17 @@ const GroupBillsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
                 const value = row[column.id];
                 return (
                   <TableCell className={classes.row} key={uuidv4()} align={column.align}>
-                    {value}
+                    {value.length > 255 ? (
+                      <LinesEllipsis
+                        text={value}
+                        maxLine="3"
+                        ellipsis="..."
+                        trimRight
+                        basedOn="letters"
+                      />
+                    ) : (
+                      value
+                    )}
                   </TableCell>
                 );
               })}
