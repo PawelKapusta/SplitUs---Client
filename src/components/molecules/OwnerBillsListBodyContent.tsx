@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, Ref, useEffect } from "react";
+import React, { forwardRef, Ref, useState } from "react";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import { makeStyles } from "@material-ui/core/styles";
@@ -9,21 +9,18 @@ import Slide from "@material-ui/core/Slide";
 import { TransitionProps } from "@material-ui/core/transitions";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
-import { useHistory, Redirect } from "react-router";
-import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+import { useHistory } from "react-router";
 import LinearProgress from "@material-ui/core/LinearProgress";
-import Snackbar from "@material-ui/core/Snackbar";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import Box from "@material-ui/core/Box";
 import DialogActions from "@material-ui/core/DialogActions";
 import Paper, { PaperProps } from "@material-ui/core/Paper";
 import Draggable from "react-draggable";
+import LinesEllipsis from "react-lines-ellipsis";
 import Button from "../atoms/Button";
-import GroupEdit from "../templates/GroupEdit";
 import { getDetailsGroup } from "../../store/actions/groupsActions";
 import OwnerBillEdit from "../templates/OwnerBillEdit";
 import { deleteBill } from "../../store/actions/billsActions";
-import { DELETE_GROUP_RESET } from "../../constants/groupsConstants";
-import { UPDATE_BILL_RESET } from "../../constants/billsConstants";
 
 interface Props {
   page: number;
@@ -33,8 +30,8 @@ interface Props {
 
 const useStyles = makeStyles({
   buttons: {
-    display: "flex",
-    justifyContent: "space-evenly",
+    marginTop: 15,
+    marginRight: 10,
   },
   row: {
     fontSize: ".9rem",
@@ -131,27 +128,43 @@ const OwnerBillsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
                 const value = row[column.id];
                 return (
                   <TableCell className={classes.row} key={uuidv4()} align={column.align}>
-                    {value}
+                    {value.length > 255 ? (
+                      <LinesEllipsis
+                        text={value}
+                        maxLine="3"
+                        ellipsis="..."
+                        trimRight
+                        basedOn="letters"
+                      />
+                    ) : (
+                      value
+                    )}
                   </TableCell>
                 );
               })}
-              <span className={classes.buttons}>
-                <Button
-                  onClick={() => handleOpenClick(bills[index].ID)}
-                  type="open_btn"
-                  text="Open"
-                />
-                <Button
-                  onClick={() => handleEditClick(bills[index].ID, index)}
-                  type="edit_btn"
-                  text="Edit"
-                />
-                <Button
-                  onClick={() => handleDeleteClick(bills[index].ID)}
-                  type="delete_btn"
-                  text="Delete"
-                />
-              </span>
+              <div className={classes.buttons}>
+                <Box alignSelf="flex-start" style={{ marginBottom: 15 }}>
+                  <Button
+                    onClick={() => handleOpenClick(bills[index].ID)}
+                    type="open_btn"
+                    text="Open"
+                  />
+                </Box>
+                <Box alignSelf="center" style={{ marginBottom: 15 }}>
+                  <Button
+                    onClick={() => handleEditClick(bills[index].ID, index)}
+                    type="edit_btn"
+                    text="Edit"
+                  />
+                </Box>
+                <Box alignSelf="flex-end" style={{ marginBottom: 15 }}>
+                  <Button
+                    onClick={() => handleDeleteClick(bills[index].ID)}
+                    type="delete_btn"
+                    text="Delete"
+                  />
+                </Box>
+              </div>
             </TableRow>
           );
         })}

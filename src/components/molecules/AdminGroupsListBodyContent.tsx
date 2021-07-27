@@ -1,7 +1,7 @@
 import React, { forwardRef, Ref, useState } from "react";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, Theme } from "@material-ui/core/styles";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
@@ -10,12 +10,14 @@ import { TransitionProps } from "@material-ui/core/transitions";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+import Box from "@material-ui/core/Box";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
 import Paper, { PaperProps } from "@material-ui/core/Paper";
 import Draggable from "react-draggable";
 import { useHistory } from "react-router";
+import LinesEllipsis from "react-lines-ellipsis";
 import Button from "../atoms/Button";
 import { deleteGroup } from "../../store/actions/groupsActions";
 
@@ -25,10 +27,17 @@ interface Props {
   columns: any;
 }
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme: Theme) => ({
   buttons: {
-    display: "flex",
-    justifyContent: "space-evenly",
+    paddingLeft: "8%",
+    marginTop: 15,
+    marginRight: 15,
+    [theme.breakpoints.down("sm")]: {
+      marginTop: 30,
+    },
+    [theme.breakpoints.down("md")]: {
+      marginTop: 20,
+    },
   },
   row: {
     fontSize: ".9rem",
@@ -45,7 +54,7 @@ const useStyles = makeStyles({
     marginLeft: 15,
     marginTop: 15,
   },
-});
+}));
 
 /* eslint-disable */
 const Transition = forwardRef(function Transition(
@@ -113,22 +122,36 @@ const AdminGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, column
 
                 return (
                   <TableCell className={classes.row} key={uuidv4()} align={column.align}>
-                    {value}
+                    {value.length > 255 ? (
+                      <LinesEllipsis
+                        text={value}
+                        maxLine="3"
+                        ellipsis="..."
+                        trimRight
+                        basedOn="letters"
+                      />
+                    ) : (
+                      value
+                    )}
                   </TableCell>
                 );
               })}
-              <span className={classes.buttons}>
-                <Button
-                  onClick={() => handleOpenClick(groups[index].ID)}
-                  type="open_btn"
-                  text="Open"
-                />
-                <Button
-                  onClick={() => handleDeleteClick(groups[index].ID)}
-                  type="delete_btn"
-                  text="Delete"
-                />
-              </span>
+              <div className={classes.buttons}>
+                <Box alignSelf="flex-start" style={{ marginBottom: 15 }}>
+                  <Button
+                    onClick={() => handleOpenClick(groups[index].ID)}
+                    type="open_btn"
+                    text="Open"
+                  />
+                </Box>
+                <Box alignSelf="center" style={{ marginBottom: 15 }}>
+                  <Button
+                    onClick={() => handleDeleteClick(groups[index].ID)}
+                    type="delete_btn"
+                    text="Delete"
+                  />
+                </Box>
+              </div>
             </TableRow>
           );
         })}

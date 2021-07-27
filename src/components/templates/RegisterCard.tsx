@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import * as yup from "yup";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -8,9 +8,10 @@ import { InputLabel } from "@material-ui/core";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import AlternateEmailIcon from "@material-ui/icons/AlternateEmail";
 import LockIcon from "@material-ui/icons/Lock";
-import { useHistory } from "react-router-dom";
+import { Redirect, useHistory } from "react-router-dom";
 import Button from "@material-ui/core/Button";
-import { useDispatch } from "react-redux";
+import LinearProgress from "@material-ui/core/LinearProgress";
+import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import FaceOutlinedIcon from "@material-ui/icons/FaceOutlined";
 import PhoneAndroidOutlinedIcon from "@material-ui/icons/PhoneAndroidOutlined";
 import IconButton from "@material-ui/core/IconButton";
@@ -121,12 +122,18 @@ function Alert(props: AlertProps) {
 }
 
 const RegisterCard: React.FC = () => {
+  const userRegister = useSelector((state: RootStateOrAny) => state.userRegister);
+  const { loading, error, success } = userRegister;
   const [image, setImage] = useState(defaultAvatar);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [open, setOpen] = React.useState(false);
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    <Redirect to="/login" />;
+  }, [success]);
 
   const schema = yup.object().shape({
     fullName: yup.string().required("Full Name is a required field").max(70),
@@ -342,9 +349,31 @@ const RegisterCard: React.FC = () => {
           <Button className={classes.toLogin} variant="outlined" onClick={handleRedirectClick}>
             Login
           </Button>
-          <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-            <Alert severity="success">Thanks for registering. Now please go to LOGIN :)</Alert>
-          </Snackbar>
+          {loading ? (
+            <div>
+              <LinearProgress /> <span>Creating account...</span>
+            </div>
+          ) : (
+            ""
+          )}
+          {success ? <span>Now go to login</span> : ""}
+          {!loading && success && !error ? (
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+              <Alert severity="success">Thanks for registering. Now please go to LOGIN :)</Alert>
+            </Snackbar>
+          ) : (
+            ""
+          )}
+          {!loading && error === "User with this email already exists!" ? (
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+              <Alert severity="error">
+                User with this email already exists! Try another email or contact with the
+                administrator
+              </Alert>
+            </Snackbar>
+          ) : (
+            ""
+          )}
         </form>
       </Paper>
     </div>

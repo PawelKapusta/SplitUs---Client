@@ -12,6 +12,7 @@ import { TransitionProps } from "@material-ui/core/transitions";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import LinearProgress from "@material-ui/core/LinearProgress";
+import Box from "@material-ui/core/Box";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
 import Paper, { PaperProps } from "@material-ui/core/Paper";
@@ -28,8 +29,9 @@ interface Props {
 
 const useStyles = makeStyles({
   buttons: {
-    display: "flex",
-    justifyContent: "space-evenly",
+    paddingLeft: "25%",
+    marginTop: 15,
+    marginRight: 15,
   },
   row: {
     fontSize: ".9rem",
@@ -130,14 +132,18 @@ const AdminUsersListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
                   </TableCell>
                 );
               })}
-              <span className={classes.buttons}>
-                <Button onClick={() => handleEditClick(index)} type="edit_btn" text="Edit" />
-                <Button
-                  onClick={() => handleDeleteClick(users[index].ID)}
-                  type="delete_btn"
-                  text="Delete"
-                />
-              </span>
+              <div className={classes.buttons}>
+                <Box alignSelf="flex-start" style={{ marginBottom: 15 }}>
+                  <Button onClick={() => handleEditClick(index)} type="edit_btn" text="Edit" />
+                </Box>
+                <Box alignSelf="center" style={{ marginBottom: 15 }}>
+                  <Button
+                    onClick={() => handleDeleteClick(users[index].ID)}
+                    type="delete_btn"
+                    text="Delete"
+                  />
+                </Box>
+              </div>
             </TableRow>
           );
         })}

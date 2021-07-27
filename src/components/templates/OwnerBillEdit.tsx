@@ -1,31 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { makeStyles, Theme } from "@material-ui/core/styles";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
-import InputLabel from "@material-ui/core/InputLabel";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import LinearProgress from "@material-ui/core/LinearProgress";
-import MultiSelect from "react-multi-select-component";
-import SearchIcon from "@material-ui/icons/Search";
-import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import FingerprintIcon from "@material-ui/icons/Fingerprint";
 import DescriptionIcon from "@material-ui/icons/Description";
 import EuroIcon from "@material-ui/icons/Euro";
 import AccountBalanceWalletIcon from "@material-ui/icons/AccountBalanceWallet";
-import Dialog from "@material-ui/core/Dialog";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import Paper, { PaperProps } from "@material-ui/core/Paper";
-import Draggable from "react-draggable";
-import { getListUsersOfGroup, updateGroup } from "../../store/actions/groupsActions";
 import Button from "../atoms/Button";
 import FormInput from "../atoms/FormInput";
-import defaultAvatar from "../../assets/svg/undraw_profile_pic_ic5t.svg";
-import defaultImage from "../../assets/images/defaultImage.jpg";
 import { updateBill } from "../../store/actions/billsActions";
 
 interface Props {
@@ -38,10 +26,7 @@ interface FormValues {
   description: string;
   dataCreated: string;
   dataEnd: string;
-  currencyCode: string;
-  debt: number;
   billImage?: string;
-  members: any;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -139,8 +124,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const OwnerBillEdit: React.FC<Props> = ({ bill, handleClose }) => {
-  const selectedUsersArray: { label: string; value: string }[] = [];
-  const options: { label: string; value: string }[] = [];
   const updatedBill = useSelector((state: RootStateOrAny) => state.updatedBill);
   const { loading: loadingUpdateOwnerBill, success: updateOwnerBillsSuccess } = updatedBill;
   const dispatch = useDispatch();
@@ -149,34 +132,11 @@ const OwnerBillEdit: React.FC<Props> = ({ bill, handleClose }) => {
   const cutDataEndToMinutes = bill?.DataEnd.match(regex);
   const classes = useStyles();
 
-  // users?.map((user: any) =>
-  //   options.push({
-  //     label: `${user.FullName} email: ${user.Email}`,
-  //     value: `${user.ID}`,
-  //   }),
-  // );
-
-  // usersOfGroupList?.map((user: any) =>
-  //   selectedUsersArray.push({
-  //     label: `${user.FullName} email: ${user.Email}`,
-  //     value: `${user.ID}`,
-  //   }),
-  // );
-  //
-  // const [selected, setSelected] = useState(selectedUsersArray);
-  //
-  // useEffect(() => {
-  //   //dispatch(getListUsersOfGroup(group.ID));
-  //   setSelected(selectedUsersArray);
-  // }, []);
-
   const schema = yup.object().shape({
     name: yup.string().required("Name is a required field"),
     description: yup.string().required("Description is a required field"),
     dataCreated: yup.string().required("DataCreated is a required field"),
     dataEnd: yup.string().required("DataEnd is a required field"),
-    currencyCode: yup.string().required("Currency code is a required field"),
-    debt: yup.number().required("Debt is a required field"),
   });
 
   const handleCloseAll = () => {
@@ -193,15 +153,7 @@ const OwnerBillEdit: React.FC<Props> = ({ bill, handleClose }) => {
 
   const onSubmit: SubmitHandler<FormValues> = async values => {
     await dispatch(
-      updateBill(
-        bill.ID,
-        values.name,
-        values.description,
-        values.dataCreated,
-        values.dataEnd,
-        values.currencyCode,
-        values.debt,
-      ),
+      updateBill(bill.ID, values.name, values.description, values.dataCreated, values.dataEnd),
     );
     handleClose();
 
@@ -277,60 +229,6 @@ const OwnerBillEdit: React.FC<Props> = ({ bill, handleClose }) => {
           InputProps=""
           type="datetime-local"
         />
-        <FormInput
-          labelTitle="Currency Code"
-          name="currencyCode"
-          control={control}
-          register={register}
-          errors={errors?.currencyCode}
-          defaultValue={bill.CurrencyCode}
-          setValue={setValue}
-          numberRows={1}
-          multiline={true}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <EuroIcon className={classes.icon} />
-              </InputAdornment>
-            ),
-          }}
-          type="text"
-        />
-        <FormInput
-          labelTitle="Debt"
-          name="debt"
-          control={control}
-          register={register}
-          errors={errors?.debt}
-          defaultValue={bill.Debt}
-          setValue={setValue}
-          numberRows={1}
-          multiline={true}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <AccountBalanceWalletIcon className={classes.icon} />
-              </InputAdornment>
-            ),
-          }}
-          type="number"
-        />
-
-        {/*<InputLabel className={classes.label}>Group Members</InputLabel>*/}
-        {/*{loadingUsersOfGroup ? (*/}
-        {/*  <LinearProgress />*/}
-        {/*) : (*/}
-        {/*  <div className={classes.membersSelector}>*/}
-        {/*    <MultiSelect*/}
-        {/*      options={options}*/}
-        {/*      value={selected}*/}
-        {/*      onChange={setSelected}*/}
-        {/*      labelledBy="Select"*/}
-        {/*      ClearIcon={<SearchIcon />}*/}
-        {/*      ClearSelectedIcon={<DeleteForeverIcon />}*/}
-        {/*    />*/}
-        {/*  </div>*/}
-        {/*)}*/}
         {loadingUpdateOwnerBill ? (
           <span>
             {" "}

@@ -24,7 +24,7 @@ import ImageIcon from "@material-ui/icons/Image";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import QRCode from "react-qr-code";
 import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
-import { InputLabel } from "@material-ui/core";
+import { v4 as uuidv4 } from "uuid";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import TextField from "@material-ui/core/TextField";
 import * as yup from "yup";
@@ -34,6 +34,8 @@ import {
   getDetailsBill,
   updateCodeQrValueInBill,
   settleUpBillUser,
+  createComment,
+  getListCommentsInBill,
 } from "../store/actions/billsActions";
 import Flag from "../components/atoms/Flag";
 import defaultBillImage from "../assets/images/defaultImage.jpg";
@@ -298,6 +300,10 @@ const BillDetails: React.FC<Props> = ({ match }) => {
   const { userInfo } = userSignIn;
   const settleUpUpdateBill = useSelector((state: RootStateOrAny) => state.settleUpUpdateBill);
   const { success: settleUpUpdateBillSuccess } = settleUpUpdateBill;
+  const commentsList = useSelector((state: RootStateOrAny) => state.commentsList);
+  const { loading: commentsListLoading, comments } = commentsList;
+  const deleteComment = useSelector((state: RootStateOrAny) => state.deleteComment);
+  const { loading: deleteCommentLoading, success: deleteCommentSuccess } = deleteComment;
 
   const allUsersInBill = users?.usersBills;
   const allUsersInBillData = users?.usersData;
@@ -313,10 +319,12 @@ const BillDetails: React.FC<Props> = ({ match }) => {
   useEffect(() => {
     dispatch(getDetailsBill(match?.params?.id));
     dispatch(getAllUsersInBill(match?.params?.id));
+    dispatch(getListCommentsInBill(bill?.ID));
   }, [settleUpUpdateBillSuccess]);
 
   console.log("1", users?.usersBills);
   console.log("2", users?.usersData);
+  console.log("comments", comments);
 
   const handleGenerateCodeQRClick = () => {
     setCodeQRUrl(window.location.href);
@@ -351,24 +359,34 @@ const BillDetails: React.FC<Props> = ({ match }) => {
   };
 
   const schema = yup.object().shape({
-    content: yup.string().required("Content is a required field"),
+    content: yup.string().max(255).required("Content is a required field"),
   });
 
   const handleSettleUpUser = (usersBills: any) => {
     dispatch(settleUpBillUser(usersBills.ID));
   };
 
+  const getDetailsOfUser = (id: string) => {
+    console.log(id);
+    // const data = await dispatch(getDetailsOfUser(id));
+    // console.log("user data", data);
+    // return Promise.all([data]);
+  };
+
   const {
     register,
     handleSubmit,
-    reset,
     control,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>({ resolver: yupResolver(schema) });
 
+  console.log("ID", userInfo.data.ID);
+
   const onSubmit: SubmitHandler<FormValues> = data => {
     console.log("data", data);
-    reset();
+    dispatch(createComment(bill?.ID, userInfo?.data?.ID, data.content));
+    setValue("content", "");
   };
 
   return (
@@ -431,9 +449,10 @@ const BillDetails: React.FC<Props> = ({ match }) => {
           {usersInBillLoading ? (
             <LinearProgress className={classes.usersLoader} color="secondary" />
           ) : (
-            <List className={classes.list}>
+            <List className={classes.list} key={uuidv4()}>
+              {/* eslint-disable */}
               {allUsersInBill?.map((user: any) => (
-                <>
+                <React.Fragment key={uuidv4()}>
                   <ListItem alignItems="flex-start">
                     <ListItemAvatar>
                       <Avatar alt="Remy Sharp" src={findImage(user)} />
@@ -512,7 +531,7 @@ const BillDetails: React.FC<Props> = ({ match }) => {
                     </span>
                   </ListItem>
                   <Divider variant="inset" component="li" />
-                </>
+                </React.Fragment>
               ))}
             </List>
           )}
@@ -580,6 +599,13 @@ const BillDetails: React.FC<Props> = ({ match }) => {
               <span className={classes.span}>{errors.content?.message}</span>
               <input className={classes.submitButton} type="submit" />
             </form>
+            {/*{commentsListLoading ? (*/}
+            {/*  <LinearProgress />*/}
+            {/*) : (*/}
+            {/*  comments?.map((comment: any) => (*/}
+            {/*    <span key={comment.ID}>{() => getDetailsOfUser(comment.UserId)}</span>*/}
+            {/*  ))*/}
+            {/*)}*/}
           </div>
         </div>
       )}

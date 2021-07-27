@@ -243,7 +243,7 @@ const BillCreator: React.FC<Props> = ({ groupId, handleClose }) => {
 
   const schema = yup.object().shape({
     name: yup.string().required("Name is a required field"),
-    description: yup.string().required("Description is a required field"),
+    description: yup.string().max(1024).required("Description is a required field"),
     dataCreated: yup.string().required("DataCreated is a required field"),
     dataEnd: yup.string().required("DataEnd is a required field"),
     billImage: yup.string().url(),

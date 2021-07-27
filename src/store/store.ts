@@ -11,7 +11,7 @@ import {
   userAdminUpdateReducer,
 } from "./reducers/userReducer";
 import { currencyListReducer } from "./reducers/currencyReducer";
-import { questionsFaqListReducer } from "./reducers/questionsFaqReducer";
+import { questionsFaqListReducer, questionFaqCreateReducer } from "./reducers/questionsFaqReducer";
 import {
   groupsListReducer,
   userGroupsListReducer,
@@ -32,6 +32,9 @@ import {
   billCodeQrUpdateReducer,
   allUsersInBillReducer,
   settleUpBillUpdateReducer,
+  commentCreateReducer,
+  commentsListReducer,
+  commentDeleteReducer,
 } from "./reducers/billsReducer";
 
 const initialState = {
@@ -69,6 +72,10 @@ const reducer = combineReducers({
   updateCodeQrBill: billCodeQrUpdateReducer,
   usersInBill: allUsersInBillReducer,
   settleUpUpdateBill: settleUpBillUpdateReducer,
+  questionFaqCreated: questionFaqCreateReducer,
+  createdComment: commentCreateReducer,
+  commentsList: commentsListReducer,
+  deleteComment: commentDeleteReducer,
 });
 
 declare global {

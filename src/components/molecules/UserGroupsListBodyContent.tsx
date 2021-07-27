@@ -14,9 +14,11 @@ import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Snackbar from "@material-ui/core/Snackbar";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import Box from "@material-ui/core/Box";
 import DialogActions from "@material-ui/core/DialogActions";
 import Paper, { PaperProps } from "@material-ui/core/Paper";
 import Draggable from "react-draggable";
+import LinesEllipsis from "react-lines-ellipsis";
 import Button from "../atoms/Button";
 import GroupEdit from "../templates/GroupEdit";
 import { deleteGroup } from "../../store/actions/groupsActions";
@@ -30,8 +32,8 @@ interface Props {
 
 const useStyles = makeStyles({
   buttons: {
-    display: "flex",
-    justifyContent: "space-evenly",
+    marginTop: 15,
+    marginRight: 10,
   },
   row: {
     fontSize: ".9rem",
@@ -147,23 +149,39 @@ const UserGroupsListBodyContent: React.FC<Props> = ({ page, rowsPerPage, columns
                 console.log("column", index);
                 return (
                   <TableCell className={classes.row} key={uuidv4()} align={column.align}>
-                    {value}
+                    {value.length > 255 ? (
+                      <LinesEllipsis
+                        text={value}
+                        maxLine="3"
+                        ellipsis="..."
+                        trimRight
+                        basedOn="letters"
+                      />
+                    ) : (
+                      value
+                    )}
                   </TableCell>
                 );
               })}
-              <span className={classes.buttons}>
-                <Button
-                  onClick={() => handleOpenClick(groups[index].ID)}
-                  type="open_btn"
-                  text="Open"
-                />
-                <Button onClick={() => handleEditClick(index)} type="edit_btn" text="Edit" />
-                <Button
-                  onClick={() => handleDeleteClick(groups[index].ID)}
-                  type="delete_btn"
-                  text="Delete"
-                />
-              </span>
+              <div className={classes.buttons}>
+                <Box alignSelf="flex-start" style={{ marginBottom: 15 }}>
+                  <Button
+                    onClick={() => handleOpenClick(groups[index].ID)}
+                    type="open_btn"
+                    text="Open"
+                  />
+                </Box>
+                <Box alignSelf="center" style={{ marginBottom: 15 }}>
+                  <Button onClick={() => handleEditClick(index)} type="edit_btn" text="Edit" />
+                </Box>
+                <Box alignSelf="flex-end" style={{ marginBottom: 15 }}>
+                  <Button
+                    onClick={() => handleDeleteClick(groups[index].ID)}
+                    type="delete_btn"
+                    text="Delete"
+                  />
+                </Box>
+              </div>
             </TableRow>
           );
         })}

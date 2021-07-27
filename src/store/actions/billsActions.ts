@@ -29,6 +29,15 @@ import {
   SETTLE_UP_UPDATE_BILL_REQUEST,
   SETTLE_UP_UPDATE_BILL_SUCCESS,
   SETTLE_UP_UPDATE_BILL_FAIL,
+  CREATE_COMMENT_REQUEST,
+  CREATE_COMMENT_FAIL,
+  CREATE_COMMENT_SUCCESS,
+  COMMENTS_LIST_FAIL,
+  COMMENTS_LIST_REQUEST,
+  COMMENTS_LIST_SUCCESS,
+  DELETE_COMMENT_FAIL,
+  DELETE_COMMENT_REQUEST,
+  DELETE_COMMENT_SUCCESS,
 } from "../../constants/billsConstants";
 import http from "../../lib/axios";
 
@@ -140,12 +149,10 @@ export const updateBill = (
   Description: string,
   DataCreated: string,
   DataEnd: string,
-  CurrencyCode: string,
-  Debt: number,
 ) => async (dispatch: any, getState: any) => {
   dispatch({
     type: UPDATE_BILL_REQUEST,
-    payload: { Name, Description, DataCreated, DataEnd, CurrencyCode, Debt },
+    payload: { Name, Description, DataCreated, DataEnd },
   });
   const {
     userSignIn: { userInfo },
@@ -153,7 +160,7 @@ export const updateBill = (
   try {
     const { data } = await http.put(
       `/bills/owner/${id}`,
-      { Name, Description, DataCreated, DataEnd, CurrencyCode, Debt },
+      { Name, Description, DataCreated, DataEnd },
       {
         headers: { Authorization: `Bearer ${userInfo?.data?.token}` },
       },
@@ -275,5 +282,67 @@ export const updateCodeQrValueInBill = (id: string, urlValue: string) => async (
   } catch (e) {
     const message = e.response && e.response.data.message ? e.response.data.message : e.message;
     dispatch({ type: UPDATE_CODE_QR_BILL_FAIL, error: message });
+  }
+};
+
+export const createComment = (BillId: string, UserId: string, Content: string) => async (
+  dispatch: any,
+  getState: any,
+) => {
+  dispatch({ type: CREATE_COMMENT_REQUEST });
+  try {
+    const {
+      userSignIn: { userInfo },
+    } = getState();
+    const { data } = await http.post(
+      `/comments`,
+      { BillId, UserId, Content },
+      {
+        headers: {
+          Authorization: `Bearer ${userInfo?.data?.token}`,
+        },
+      },
+    );
+    dispatch({ type: CREATE_COMMENT_SUCCESS, payload: data });
+  } catch (error) {
+    const message =
+      error.response && error.response.data.message ? error.response.data.message : error.message;
+    dispatch({ type: CREATE_COMMENT_FAIL, payload: message });
+  }
+};
+
+export const getListCommentsInBill = (id: string) => async (dispatch: any, getState: any) => {
+  dispatch({ type: COMMENTS_LIST_REQUEST });
+  try {
+    const {
+      userSignIn: { userInfo },
+    } = getState();
+    const { data } = await http.get(`/comments/${id}`, {
+      headers: {
+        Authorization: `Bearer ${userInfo?.data?.token}`,
+      },
+    });
+    dispatch({ type: COMMENTS_LIST_SUCCESS, payload: data?.comments });
+  } catch (error) {
+    const message =
+      error.response && error.response.data.message ? error.response.data.message : error.message;
+    dispatch({ type: COMMENTS_LIST_FAIL, payload: message });
+  }
+};
+
+export const deleteComment = (id: string) => async (dispatch: any, getState: any) => {
+  dispatch({ type: DELETE_COMMENT_REQUEST, payload: id });
+  const {
+    userSignIn: { userInfo },
+  } = getState();
+  try {
+    const { data } = await http.delete(`/comments/${id}`, {
+      headers: { Authorization: `Bearer ${userInfo?.data?.token}` },
+    });
+    dispatch({ type: DELETE_COMMENT_SUCCESS, payload: data });
+  } catch (error) {
+    const message =
+      error.response && error.response.data.message ? error.response.data.message : error.message;
+    dispatch({ type: DELETE_COMMENT_FAIL, payload: message });
   }
 };

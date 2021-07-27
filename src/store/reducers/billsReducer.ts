@@ -8,12 +8,21 @@ import {
   BILLS_LIST_FAIL,
   BILLS_LIST_REQUEST,
   BILLS_LIST_SUCCESS,
+  COMMENTS_LIST_FAIL,
+  COMMENTS_LIST_REQUEST,
+  COMMENTS_LIST_SUCCESS,
   CREATE_BILL_FAIL,
   CREATE_BILL_REQUEST,
   CREATE_BILL_SUCCESS,
+  CREATE_COMMENT_FAIL,
+  CREATE_COMMENT_REQUEST,
+  CREATE_COMMENT_SUCCESS,
   DELETE_BILL_FAIL,
   DELETE_BILL_REQUEST,
   DELETE_BILL_SUCCESS,
+  DELETE_COMMENT_FAIL,
+  DELETE_COMMENT_REQUEST,
+  DELETE_COMMENT_SUCCESS,
   GROUP_BILLS_LIST_FAIL,
   GROUP_BILLS_LIST_REQUEST,
   GROUP_BILLS_LIST_SUCCESS,
@@ -158,6 +167,45 @@ export const billCodeQrUpdateReducer = (state = {}, action: any) => {
     case UPDATE_CODE_QR_BILL_SUCCESS:
       return { loading: false, success: true };
     case UPDATE_CODE_QR_BILL_FAIL:
+      return { loading: false, error: action.payload };
+    default:
+      return state;
+  }
+};
+
+export const commentCreateReducer = (state = {}, action: any) => {
+  switch (action.type) {
+    case CREATE_COMMENT_REQUEST:
+      return { loading: true };
+    case CREATE_COMMENT_SUCCESS:
+      return { loading: false, success: true, comment: action.payload };
+    case CREATE_COMMENT_FAIL:
+      return { loading: false, error: action.payload };
+    default:
+      return state;
+  }
+};
+
+export const commentsListReducer = (state = {}, action: any) => {
+  switch (action.type) {
+    case COMMENTS_LIST_REQUEST:
+      return { loading: true };
+    case COMMENTS_LIST_SUCCESS:
+      return { loading: false, comments: action.payload };
+    case COMMENTS_LIST_FAIL:
+      return { loading: false, error: action.payload };
+    default:
+      return state;
+  }
+};
+
+export const commentDeleteReducer = (state = {}, action: any) => {
+  switch (action.type) {
+    case DELETE_COMMENT_REQUEST:
+      return { loading: true };
+    case DELETE_COMMENT_SUCCESS:
+      return { loading: false, success: true };
+    case DELETE_COMMENT_FAIL:
       return { loading: false, error: action.payload };
     default:
       return state;

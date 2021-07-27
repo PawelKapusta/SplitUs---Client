@@ -6,6 +6,8 @@ import AccordionDetails from "@material-ui/core/AccordionDetails";
 import Typography from "@material-ui/core/Typography";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import { RootStateOrAny, useSelector } from "react-redux";
+import Button from "../atoms/Button";
 
 interface Props {
   loading: boolean;
@@ -45,7 +47,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const QuestionsAccordion: React.FC<Props> = ({ loading, QuestionsFaq }) => {
   const classes = useStyles();
-
   return (
     <div className={classes.root}>
       {loading ? (
@@ -53,17 +54,19 @@ const QuestionsAccordion: React.FC<Props> = ({ loading, QuestionsFaq }) => {
       ) : (
         QuestionsFaq?.map((element: any, index: number) => {
           return (
-            <Accordion key={element.ID}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls={`panel${index + 1}a-content`}
-                id={`panel${index + 1}a-header`}>
-                <Typography className={classes.heading}>{element.Question}</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Typography className={classes.answer}>{element.Answer}</Typography>
-              </AccordionDetails>
-            </Accordion>
+            <>
+              <Accordion key={element.ID}>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls={`panel${index + 1}a-content`}
+                  id={`panel${index + 1}a-header`}>
+                  <Typography className={classes.heading}>{element.Question}</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Typography className={classes.answer}>{element.Answer}</Typography>
+                </AccordionDetails>
+              </Accordion>
+            </>
           );
         })
       )}

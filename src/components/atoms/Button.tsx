@@ -19,11 +19,17 @@ const buttonProps: any = {
     color: "primary",
     variant: "contained",
     startIcon: <EditIcon />,
+    style: {
+      minWidth: 110,
+    },
   },
   delete_btn: {
     color: "secondary",
     variant: "contained",
     startIcon: <DeleteIcon />,
+    style: {
+      minWidth: 110,
+    },
   },
   signIn_btn: {
     variant: "contained",
@@ -60,6 +66,7 @@ const buttonProps: any = {
     startIcon: <LaunchIcon />,
     style: {
       background: "linear-gradient(to right, #1cd8d2, #93edc7)",
+      minWidth: 110,
     },
   },
   cancel_btn: {
@@ -80,6 +87,18 @@ const buttonProps: any = {
       right: 20,
       bottom: 18,
       background: "#FFC312",
+      height: 60,
+      zIndex: 120,
+    },
+  },
+  create_faqQuestion_btn: {
+    variant: "contained",
+    startIcon: <AddIcon />,
+    style: {
+      position: "relative",
+      left: 20,
+      top: 30,
+      background: "#fffc00",
       height: 60,
       zIndex: 120,
     },

@@ -35,7 +35,15 @@ export const signIn = (email: string, password: string) => async (dispatch: any)
     dispatch({ type: USER_SIGNIN_SUCCESS, payload: user });
     localStorage.setItem("userInfo", JSON.stringify(user));
     localStorage.setItem("firstRender", JSON.stringify(true));
-    if (user?.data.token) {
+    if (user?.data?.isBlocked) {
+      localStorage.setItem("isBlocked", JSON.stringify(true));
+      localStorage.removeItem("userInfo");
+      sessionStorage.removeItem("firstSignIn");
+      dispatch({ type: USER_SIGNOUT });
+      auth.logout();
+      document.location.href = "/contact";
+    } else if (user?.data?.isBlocked !== true && user?.data.token) {
+      localStorage.setItem("isBlocked", JSON.stringify(false));
       auth.login(user?.data.token);
       document.location.href = "/";
     }
@@ -106,6 +114,7 @@ export const signUp = (
 
 export const signOut = () => (dispatch: any) => {
   localStorage.removeItem("userInfo");
+  localStorage.removeItem("isBlocked");
   sessionStorage.removeItem("firstSignIn");
   dispatch({ type: USER_SIGNOUT });
   auth.logout();
@@ -190,7 +199,7 @@ export const deleteUser = (userId: string) => async (dispatch: any, getState: an
   }
 };
 
-export const detailsUser = (userId: number) => async (dispatch: any, getState: any) => {
+export const detailsUser = (userId: string) => async (dispatch: any, getState: any) => {
   dispatch({ type: USER_DETAILS_REQUEST, payload: userId });
   const {
     userSignIn: { userInfo },

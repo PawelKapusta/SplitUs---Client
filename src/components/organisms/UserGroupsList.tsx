@@ -22,9 +22,9 @@ interface Column {
 }
 
 const columns: Column[] = [
-  { id: "Name", label: "Name", minWidth: 200 },
-  { id: "Description", label: "Description", minWidth: 300 },
-  { id: "DataCreated", label: "DataCreated", minWidth: 200 },
+  { id: "Name", label: "Name", minWidth: 100 },
+  { id: "Description", label: "Description", minWidth: 150 },
+  { id: "DataCreated", label: "DataCreated", minWidth: 100 },
 ];
 
 const useStyles = makeStyles({
