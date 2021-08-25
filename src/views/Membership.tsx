@@ -4,7 +4,7 @@ import UserGroupsList from "../components/organisms/UserGroupsList";
 import UserOwnerBillsList from "../components/organisms/UserOwnerBillsList";
 import { getListGroupsOfUser } from "../store/actions/groupsActions";
 import { listUsers } from "../store/actions/userActions";
-import { getOwnerBillsList } from "../store/actions/billsActions";
+import { getListCommentsInBill, getOwnerBillsList } from "../store/actions/billsActions";
 import { UPDATE_BILL_RESET } from "../constants/billsConstants";
 
 const Membership: React.FC = () => {

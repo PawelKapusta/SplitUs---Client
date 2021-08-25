@@ -39,6 +39,7 @@ import {
 } from "../store/actions/billsActions";
 import Flag from "../components/atoms/Flag";
 import defaultBillImage from "../assets/images/defaultImage.jpg";
+import CommentView from "../components/organisms/CommentView";
 
 interface Props {
   match: any;
@@ -272,6 +273,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   message: {
     width: "90%",
   },
+
+  commentsList: {
+    display: "flex",
+  },
   submitButton: {
     color: "#ffffff",
     fontSize: "1.1em",
@@ -301,9 +306,9 @@ const BillDetails: React.FC<Props> = ({ match }) => {
   const settleUpUpdateBill = useSelector((state: RootStateOrAny) => state.settleUpUpdateBill);
   const { success: settleUpUpdateBillSuccess } = settleUpUpdateBill;
   const commentsList = useSelector((state: RootStateOrAny) => state.commentsList);
-  const { loading: commentsListLoading, comments } = commentsList;
-  const deleteComment = useSelector((state: RootStateOrAny) => state.deleteComment);
-  const { loading: deleteCommentLoading, success: deleteCommentSuccess } = deleteComment;
+  const { loading: commentsListLoading, comments, success: commentsListSuccess } = commentsList;
+  const createdComment = useSelector((state: RootStateOrAny) => state.createdComment);
+  const { success: createdCommentSuccess } = createdComment;
 
   const allUsersInBill = users?.usersBills;
   const allUsersInBillData = users?.usersData;
@@ -311,20 +316,15 @@ const BillDetails: React.FC<Props> = ({ match }) => {
   const [codeQRUrl, setCodeQRUrl] = useState("");
   const dispatch = useDispatch();
   const classes = useStyles();
-  console.log(match?.params?.id);
   const regex = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/;
   const cutDataCreatedToMinutes = String(bill?.DataCreated?.match(regex)).replace("T", " ");
   const cutDataEndToMinutes = String(bill?.DataEnd?.match(regex)).replace("T", " ");
 
   useEffect(() => {
+    dispatch(getListCommentsInBill(bill?.ID));
     dispatch(getDetailsBill(match?.params?.id));
     dispatch(getAllUsersInBill(match?.params?.id));
-    dispatch(getListCommentsInBill(bill?.ID));
-  }, [settleUpUpdateBillSuccess]);
-
-  console.log("1", users?.usersBills);
-  console.log("2", users?.usersData);
-  console.log("comments", comments);
+  }, [settleUpUpdateBillSuccess, createdCommentSuccess, commentsListSuccess]);
 
   const handleGenerateCodeQRClick = () => {
     setCodeQRUrl(window.location.href);
@@ -343,6 +343,10 @@ const BillDetails: React.FC<Props> = ({ match }) => {
 
   const findUser = (user: any) => {
     return allUsersInBillData?.find((finder: any) => finder.ID === user.UserId);
+  };
+
+  const findUserDetails = (id: any) => {
+    return allUsersInBillData?.find((finder: any) => finder.ID === id);
   };
 
   const checkIfCanSettleUp = (user: any) => {
@@ -366,13 +370,6 @@ const BillDetails: React.FC<Props> = ({ match }) => {
     dispatch(settleUpBillUser(usersBills.ID));
   };
 
-  const getDetailsOfUser = (id: string) => {
-    console.log(id);
-    // const data = await dispatch(getDetailsOfUser(id));
-    // console.log("user data", data);
-    // return Promise.all([data]);
-  };
-
   const {
     register,
     handleSubmit,
@@ -381,10 +378,7 @@ const BillDetails: React.FC<Props> = ({ match }) => {
     formState: { errors },
   } = useForm<FormValues>({ resolver: yupResolver(schema) });
 
-  console.log("ID", userInfo.data.ID);
-
   const onSubmit: SubmitHandler<FormValues> = data => {
-    console.log("data", data);
     dispatch(createComment(bill?.ID, userInfo?.data?.ID, data.content));
     setValue("content", "");
   };
@@ -599,13 +593,14 @@ const BillDetails: React.FC<Props> = ({ match }) => {
               <span className={classes.span}>{errors.content?.message}</span>
               <input className={classes.submitButton} type="submit" />
             </form>
-            {/*{commentsListLoading ? (*/}
-            {/*  <LinearProgress />*/}
-            {/*) : (*/}
-            {/*  comments?.map((comment: any) => (*/}
-            {/*    <span key={comment.ID}>{() => getDetailsOfUser(comment.UserId)}</span>*/}
-            {/*  ))*/}
-            {/*)}*/}
+
+            {usersInBillLoading && commentsListLoading ? (
+              <LinearProgress />
+            ) : (
+              comments?.map((comment: any) => (
+                <CommentView comment={comment} user={findUserDetails(comment?.UserId)} />
+              ))
+            )}
           </div>
         </div>
       )}
