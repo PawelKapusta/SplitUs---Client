@@ -203,7 +203,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   list: {
     position: "relative",
     borderRadius: "15px",
-    width: "60%",
+    width: "80%",
     backgroundColor: theme.palette.background.paper,
     margin: "auto",
   },
@@ -278,9 +278,17 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: "flex",
   },
   submitButton: {
+    [theme.breakpoints.up("xs")]: {
+      width: "45%",
+    },
+    [theme.breakpoints.up("sm")]: {
+      width: "45%",
+    },
+    [theme.breakpoints.up("md")]: {
+      width: "15%",
+    },
     color: "#ffffff",
     fontSize: "1.1em",
-    width: "15%",
     height: "34px",
     borderRadius: "15px",
     cursor: "pointer",

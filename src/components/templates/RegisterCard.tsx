@@ -171,8 +171,7 @@ const RegisterCard: React.FC = () => {
     const formData = new FormData();
     formData.append("file", image);
     formData.append("upload_preset", "l0hqmgyr");
-    console.log("Form data", formData);
-    console.log("image", image);
+
     try {
       const resp = await axios.post(
         "https://api.cloudinary.com/v1_1/duk476xud/image/upload",
@@ -214,7 +213,6 @@ const RegisterCard: React.FC = () => {
       reset();
     });
 
-    console.log(data);
     setTimeout(() => {
       setOpen(true);
     }, 1000);

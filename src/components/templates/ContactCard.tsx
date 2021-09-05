@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme: Theme) =>
         backgroundColor: "#ffffff",
         [theme.breakpoints.down("sm")]: {
           width: theme.spacing(60),
-          height: theme.spacing(95),
+          height: theme.spacing(105),
         },
         [theme.breakpoints.up("md")]: {
           width: theme.spacing(75),
